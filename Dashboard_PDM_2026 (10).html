@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Dashboard PDM 2026 – Secretaría de Familia y Desarrollo Social</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{--bg:#0a1628;--bg2:#0d1f3c;--bg3:#112244;--card:#162850;--card2:#1a3060;--accent:#1e88e5;--accent2:#00b0ff;--green:#00e676;--red:#ff5252;--orange:#ff9800;--yellow:#ffc107;--pink:#f06292;--text:#e8f0fe;--text2:#90afd4;--border:#1e3a6e}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.header{background:linear-gradient(135deg,#061020 0%,#0d1f3c 40%,#1a2e5a 100%);border-bottom:2px solid var(--accent);position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+.header-top{display:flex;align-items:center;justify-content:space-between;padding:12px 24px;gap:16px}
+.logo-box{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#fff;flex-shrink:0}
+.header-title{flex:1;text-align:center}
+.header-title h1{font-size:1.3rem;font-weight:700;color:#fff;line-height:1.2}
+.header-title p{font-size:.72rem;color:var(--accent2);margin-top:2px}
+.header-badge{background:linear-gradient(135deg,var(--accent),#1565c0);border-radius:8px;padding:8px 16px;text-align:center}
+.header-badge span{display:block;font-size:.62rem;color:rgba(255,255,255,.7)}
+.header-badge strong{font-size:.88rem;color:#fff}
+.nav{display:flex;gap:4px;padding:0 24px 10px;flex-wrap:wrap}
+.nav-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;font-family:'Poppins',sans-serif;font-size:.74rem;font-weight:500;transition:all .2s}
+.nav-btn:hover{background:var(--card2);color:var(--text)}
+.nav-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.main{padding:20px 24px;max-width:1600px;margin:0 auto}
+.section{display:none}.section.active{display:block}
+
+/* KPI */
+.kpi-row{display:grid;gap:12px;margin-bottom:16px}
+.kpi-row.cols-4{grid-template-columns:repeat(4,1fr)}
+.kpi-row.cols-5{grid-template-columns:repeat(5,1fr)}
+.kpi-row.cols-3{grid-template-columns:repeat(3,1fr)}
+.sec-lbl{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text2);margin-bottom:6px;padding-left:4px;display:flex;align-items:center;gap:8px}
+.sec-lbl::after{content:'';flex:1;height:1px;background:var(--border)}
+.kpi-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 18px;position:relative;overflow:hidden;transition:all .2s}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.kpi-card.g::before{background:linear-gradient(90deg,#00e676,#00c853)}
+.kpi-card.y::before{background:linear-gradient(90deg,#ffc107,#ff8f00)}
+.kpi-card.r::before{background:linear-gradient(90deg,#ff5252,#c62828)}
+.kpi-card.t::before{background:linear-gradient(90deg,#4dd0e1,#006064)}
+.kpi-card.p::before{background:linear-gradient(90deg,#f06292,#880e4f)}
+.kpi-lbl{font-size:.64rem;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px}
+.kpi-val{font-size:1.8rem;font-weight:800;color:#fff;line-height:1;margin-bottom:4px}
+.kpi-sub{font-size:.68rem;color:var(--text2);line-height:1.4}
+.kpi-icon{position:absolute;top:12px;right:14px;font-size:1.5rem;opacity:.16}
+.kpi-bar{height:4px;background:rgba(255,255,255,.07);border-radius:2px;margin-top:8px;overflow:hidden}
+.kpi-bar-f{height:100%;border-radius:2px}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:.64rem;font-weight:700;margin-top:5px}
+.bg{background:rgba(0,230,118,.14);color:var(--green)}
+.by{background:rgba(255,193,7,.12);color:var(--yellow)}
+.br{background:rgba(255,82,82,.12);color:var(--red)}
+.bb{background:rgba(100,181,246,.12);color:#64b5f6}
+
+/* PROG CARDS */
+.prog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:20px}
+.prog-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:all .2s}
+.prog-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.3)}
+.prog-card.sel{border-color:var(--accent2);background:var(--card2)}
+.prog-icon{font-size:1.4rem;margin-bottom:8px}
+.prog-name{font-size:.85rem;font-weight:700;margin-bottom:4px}
+.prog-info{font-size:.7rem;color:var(--text2);margin-bottom:8px}
+.pbar{height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;margin-bottom:4px}
+.pbar-f{height:100%;border-radius:3px}
+.prog-pcts{display:flex;justify-content:space-between;font-size:.68rem}
+
+/* META CARDS */
+.meta-grid{display:flex;flex-direction:column;gap:12px}
+.meta-card{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px;animation:fadeIn .25s ease}
+.meta-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
+.meta-num{background:var(--accent);color:#fff;border-radius:7px;padding:4px 9px;font-size:.72rem;font-weight:700;flex-shrink:0}
+.meta-desc{font-size:.79rem;font-weight:600;line-height:1.4}
+.meta-est{font-size:.7rem;color:#a8c4e8;background:rgba(30,136,229,.08);border-left:2px solid var(--accent2);padding:5px 9px;border-radius:0 5px 5px 0;margin:6px 0;line-height:1.5}
+.meta-cual{font-size:.7rem;color:var(--text2);border-left:2px solid var(--accent);padding:5px 9px;border-radius:0 5px 5px 0;margin:4px 0 8px;line-height:1.5;max-height:52px;overflow:hidden;cursor:pointer;transition:max-height .3s}
+.meta-cual.open{max-height:600px}
+.yr-block{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:6px 0 10px}
+.yr-cell{background:var(--bg);border-radius:8px;padding:9px;text-align:center}
+.yr-head{font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
+.yr-val{font-size:1rem;font-weight:800;line-height:1}
+.yr-sub{font-size:.58rem;color:var(--text2);margin-top:2px;line-height:1.3}
+.yr-bar{height:4px;background:rgba(255,255,255,.08);border-radius:2px;margin-top:4px}
+.yr-bar-f{height:100%;border-radius:2px}
+.meta-bars{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding-top:8px;border-top:1px solid var(--border)}
+.mbar-row{display:flex;flex-direction:column;gap:4px}
+.mbar-lbl{font-size:.62rem;color:var(--text2);text-transform:uppercase;font-weight:600}
+.mbar-track{height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden}
+.mbar-f{height:100%;border-radius:3px}
+.mbar-val{font-size:.72rem;font-weight:700;margin-top:2px}
+.meta-saldo{font-size:.68rem;background:rgba(255,193,7,.08);border:1px solid rgba(255,193,7,.2);border-radius:6px;padding:4px 8px;color:var(--yellow);margin-top:6px;display:inline-block}
+
+/* TABLE */
+.filters-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 16px;margin-bottom:14px}
+.fg{display:flex;flex-direction:column;gap:3px}
+.fg label{font-size:.62rem;color:var(--text2);font-weight:600;text-transform:uppercase}
+.fg select,.fg input{background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:7px;padding:6px 10px;font-family:'Poppins',sans-serif;font-size:.74rem;min-width:150px;outline:none}
+.fg select:focus,.fg input:focus{border-color:var(--accent)}
+.btn{padding:7px 14px;border-radius:8px;border:none;cursor:pointer;font-family:'Poppins',sans-serif;font-size:.74rem;font-weight:600;transition:all .2s}
+.btn-g{background:#00897b;color:#fff}.btn-o{background:transparent;border:1px solid var(--border);color:var(--text2)}
+.btn-o:hover{border-color:var(--accent2);color:var(--text)}
+.tbl-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:.73rem}
+thead tr{background:var(--bg3)}
+thead th{padding:8px 10px;text-align:left;color:var(--text2);font-weight:600;font-size:.62rem;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;border-bottom:1px solid var(--border)}
+thead th.h24{background:rgba(100,181,246,.1);color:#64b5f6}
+thead th.h25{background:rgba(129,199,132,.1);color:#81c784}
+thead th.h26{background:rgba(255,183,77,.1);color:#ffb74d}
+tbody tr{border-bottom:1px solid rgba(30,58,110,.4);transition:background .15s}
+tbody tr:hover{background:var(--card2)}
+tbody td{padding:7px 10px;vertical-align:middle}
+tbody td.c24{background:rgba(100,181,246,.03)}
+tbody td.c25{background:rgba(129,199,132,.03)}
+tbody td.c26{background:rgba(255,183,77,.03)}
+.pp{display:inline-block;padding:2px 6px;border-radius:5px;font-weight:700;font-size:.66rem}
+.ppg{color:var(--green);background:rgba(0,230,118,.12)}
+.ppy{color:var(--yellow);background:rgba(255,193,7,.1)}
+.ppr{color:var(--red);background:rgba(255,82,82,.1)}
+.pbar2{height:6px;background:rgba(255,255,255,.08);border-radius:3px;min-width:60px}
+.pbar2f{height:100%;border-radius:3px}
+.prog-tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.64rem;font-weight:600}
+
+/* UPLOAD */
+.upload-zone{border:2px dashed var(--border);border-radius:12px;padding:36px 20px;text-align:center;cursor:pointer;background:var(--card);transition:all .2s}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--accent2);background:var(--card2)}
+
+/* DL BAR */
+.dl-bar{position:fixed;bottom:16px;right:20px;display:flex;gap:8px;z-index:200}
+.btn-dl{background:var(--card2);border:1px solid var(--accent);border-radius:9px;color:var(--accent);font-family:'Poppins',sans-serif;font-size:.68rem;font-weight:600;padding:8px 13px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.4);transition:all .2s}
+.btn-dl:hover{background:var(--accent);color:#fff}
+
+/* COLORS by program index */
+.c0{color:#64b5f6}.c1{color:#81c784}.c2{color:#f06292}.c3{color:#ffb74d}.c4{color:#4dd0e1}.c5{color:#ce93d8}
+.bg0{background:rgba(100,181,246,.15);border-color:rgba(100,181,246,.3)!important}
+.bg1{background:rgba(129,199,132,.15);border-color:rgba(129,199,132,.3)!important}
+.bg2{background:rgba(240,98,146,.15);border-color:rgba(240,98,146,.3)!important}
+.bg3{background:rgba(255,183,77,.15);border-color:rgba(255,183,77,.3)!important}
+.bg4{background:rgba(77,208,225,.15);border-color:rgba(77,208,225,.3)!important}
+.bg5{background:rgba(206,147,216,.15);border-color:rgba(206,147,216,.3)!important}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.sec-title{font-size:1rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.sec-title span{width:4px;height:18px;background:var(--accent2);border-radius:2px;display:inline-block}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:3px}
+@media(max-width:768px){.kpi-row.cols-4,.kpi-row.cols-5{grid-template-columns:repeat(2,1fr)}.yr-block{grid-template-columns:repeat(2,1fr)}.main{padding:12px}}
+@media print{.header,.nav,.dl-bar,.filters-bar,.nav-btn,.btn{display:none!important}body{background:#fff;color:#000}.section{display:block!important}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="logo-box">🏛</div>
+    <div class="header-title">
+      <h1>Secretaría de Familia y Desarrollo Social · Zipaquirá</h1>
+      <p>Plan de Desarrollo Municipal 2024–2027 &nbsp;·&nbsp; Seguimiento Físico Vigencia 2026</p>
+    </div>
+    <div class="header-badge" id="corte-badge" onclick="editCorte()" title="Clic para editar el corte" style="cursor:pointer;min-width:110px;">
+      <span>Corte</span>
+      <strong id="corte-texto">Junio 2026</strong>
+    </div>
+  </div>
+  <div class="nav">
+    <button class="nav-btn active" onclick="showSec('inicio',this)">🏠 Inicio</button>
+    <button class="nav-btn" onclick="showSec('programas',this)">📋 Por Programa</button>
+    <button class="nav-btn" onclick="showSec('metas',this)">🎯 Metas Detalle</button>
+    <button class="nav-btn" onclick="showSec('actualizar',this)">⬆ Actualizar Datos</button>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ═══ INICIO ═══ -->
+<div class="section active" id="sec-inicio">
+  <div id="kpi-inicio"></div>
+</div>
+
+<!-- ═══ POR PROGRAMA ═══ -->
+<div class="section" id="sec-programas">
+  <p class="sec-title"><span></span>Selecciona un programa para ver el detalle de sus metas</p>
+  <div class="prog-grid" id="prog-cards"></div>
+  <div id="prog-detail" style="display:none">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;margin-top:4px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <div style="font-size:.95rem;font-weight:700" id="pd-title"></div>
+        <button class="btn btn-o" onclick="closePD()">✕ Cerrar</button>
+      </div>
+      <!-- MINI GAUGES SVG -->
+      <div id="pd-gauges" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px"></div>
+      <div class="meta-grid" id="meta-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ METAS DETALLE ═══ -->
+<div class="section" id="sec-metas">
+  <div class="filters-bar">
+    <div class="fg"><label>Programa</label><select id="f-prog" onchange="filterTbl()"><option value="">Todos</option></select></div>
+    <div class="fg"><label>Estado 2026</label>
+      <select id="f-est" onchange="filterTbl()">
+        <option value="">Todos</option>
+        <option value="c">✅ Cumplido ≥100%</option>
+        <option value="m">🟡 Medio 70–99%</option>
+        <option value="b">🔴 Bajo &lt;70%</option>
+      </select>
+    </div>
+    <div class="fg"><label>Tipo</label>
+      <select id="f-tipo" onchange="filterTbl()">
+        <option value="">Todos</option>
+        <option value="Acumulativo">Acumulativo</option>
+        <option value="No acumulativo">No acumulativo</option>
+      </select>
+    </div>
+    <div class="fg"><label>Buscar</label><input id="f-bus" type="text" placeholder="Nº o descripción..." oninput="filterTbl()"></div>
+    <div style="display:flex;gap:6px;align-self:flex-end">
+      <button class="btn btn-g" onclick="exportCSV()">⬇ CSV</button>
+      <button class="btn btn-o" onclick="clearF()">↺ Limpiar</button>
+    </div>
+  </div>
+  <div style="font-size:.73rem;color:var(--text2);margin-bottom:10px" id="res-cnt"></div>
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th rowspan="2">Meta</th>
+          <th rowspan="2">Programa</th>
+          <th rowspan="2">Tipo</th>
+          <th rowspan="2" style="min-width:180px">Descripción</th>
+          <th rowspan="2" style="min-width:140px">Estrategia</th>
+          <th colspan="3" class="h24" style="text-align:center">2024</th>
+          <th colspan="3" class="h25" style="text-align:center">2025</th>
+          <th colspan="3" class="h26" style="text-align:center">2026</th>
+        </tr>
+        <tr>
+          <th class="h24">Meta</th><th class="h24">Ejec.</th><th class="h24">%</th>
+          <th class="h25">Meta</th><th class="h25">Ejec.</th><th class="h25">%</th>
+          <th class="h26">Meta</th><th class="h26">Ejec.</th><th class="h26">%</th>
+        </tr>
+      </thead>
+      <tbody id="tbl-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══ ACTUALIZAR ═══ -->
+<div class="section" id="sec-actualizar">
+  <p class="sec-title"><span></span>Actualizar Datos del Dashboard</p>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+
+    <!-- OPCIÓN 1: EXCEL -->
+    <div>
+      <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text2);margin-bottom:8px;display:flex;align-items:center;gap:6px;">
+        <span style="background:var(--accent);color:#fff;border-radius:5px;padding:2px 8px;">📊 Opción 1</span> Cargar archivo Excel (.xlsx)
+      </div>
+      <div class="upload-zone" id="drop-zone" onclick="document.getElementById('file-input').click()" style="padding:28px 18px;">
+        <div style="font-size:2.2rem;margin-bottom:8px">📊</div>
+        <div style="font-size:.85rem;font-weight:600;margin-bottom:6px">Arrastra tu Excel aquí o haz clic</div>
+        <div style="font-size:.7rem;color:var(--text2);line-height:1.7;margin-bottom:10px;">
+          <b>Columnas esperadas (hoja activa):</b><br>
+          A: Programa · B: No. Meta · C: Estrategias · D: Descripción meta cuatrienio<br>
+          E: Descripción Cualitativa · F: Meta cuatrienio · G: Tipo acumulación<br>
+          H–J: Prog/Ejec/% 2024 · K–M: Prog/Ejec/% 2025 · N–P: Prog/Ejec/% 2026
+        </div>
+        <input type="file" id="file-input" accept=".xlsx,.xls,.csv" onchange="loadFile(event)">
+        <div style="background:var(--accent);color:#fff;border-radius:7px;padding:7px 18px;font-size:.78rem;font-weight:600;display:inline-block;margin-top:4px;">Seleccionar Excel</div>
+        <p id="up-msg" style="margin-top:10px;font-size:.73rem;color:#00e676;min-height:16px"></p>
+      </div>
+    </div>
+
+    <!-- OPCIÓN 2: HTML DASHBOARD -->
+    <div>
+      <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text2);margin-bottom:8px;display:flex;align-items:center;gap:6px;">
+        <span style="background:#00897b;color:#fff;border-radius:5px;padding:2px 8px;">🖥 Opción 2</span> Cargar Dashboard HTML actualizado
+      </div>
+      <div class="upload-zone" id="drop-zone-html" onclick="document.getElementById('file-input-html').click()" style="padding:28px 18px;">
+        <div style="font-size:2.2rem;margin-bottom:8px">🖥</div>
+        <div style="font-size:.85rem;font-weight:600;margin-bottom:6px">Arrastra un HTML aquí o haz clic</div>
+        <div style="font-size:.7rem;color:var(--text2);line-height:1.7;margin-bottom:10px;">
+          Carga una versión nueva de este mismo dashboard (.html) con datos ya actualizados.<br>
+          La página se reemplazará automáticamente y podrás descargarlo.
+        </div>
+        <input type="file" id="file-input-html" accept=".html,.htm" onchange="loadHTML(event)">
+        <div style="background:#00897b;color:#fff;border-radius:7px;padding:7px 18px;font-size:.78rem;font-weight:600;display:inline-block;margin-top:4px;">Seleccionar HTML</div>
+        <p id="up-msg-html" style="margin-top:10px;font-size:.73rem;color:#00e676;min-height:16px"></p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ESTADO ACTUAL DE DATOS -->
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px;">
+    <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text2);margin-bottom:10px;">📋 Estado actual del dashboard</div>
+    <div style="display:flex;gap:20px;flex-wrap:wrap;" id="data-status"></div>
+  </div>
+</div>
+
+
+</div><!-- /main -->
+
+<div class="dl-bar">
+  <button class="btn-dl" onclick="window.print()">🖨 PDF</button>
+  <button class="btn-dl" onclick="exportCSV()">⬇ CSV</button>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+let DATA = [
+  {p:"Protegiendo generaciones",m:104,est:"",desc:"Realizar 4 espacios de interlocuci\u00f3n para rendici\u00f3n de cuentas de Ni\u00f1os, ni\u00f1as, adolescentes y j\u00f3venes",cual:"Programa para el mes de nov",meta4:4.0,tipo:"No acumulativo",p24:1.0,e24:1.0,pct24:1.0,p25:1.0,e25:1.0,pct25:1.0,p26:1.0,e26:0.0,pct26:0.0},
+  {p:"Protegiendo generaciones",m:105,est:"implementar el programa intergeneracional: espacios de participaci\u00f3n como las ludotecas, centros de atenci\u00f3n, casa de la mujer",desc:"Aumentar a 30 los semilleros de participaci\u00f3n de ni\u00f1os, ni\u00f1as y adolescentes en entornos comunitarios y escolares.",cual:"Actualmente se cuenta con 30 semilleros en funcionamiento, de los cuales 28 se desarrollan en instituciones educativas y 2 en barrios del municipio 1 en san gabriel y 1 villa luz de los cuales se cuenta con un total de participacion de 847",meta4:30.0,tipo:"Acumulativo",p24:22.0,e24:22.0,pct24:1.0,p25:29.0,e25:29.0,pct25:1.0,p26:30.0,e26:30.0,pct26:1.0},
+  {p:"Protegiendo generaciones",m:106,est:"",desc:"Beneficiar 8000 ni\u00f1os, ni\u00f1as y adolescentes que participan de la celebraci\u00f3n del mes de la Ni\u00f1ez",cual:"Se realizaron una faces en la celebraci\u00f3n de la ni\u00f1ez que fue indagaci\u00f3n, de las cuales se dividieron en 2 aspectos en redes sociales se tuvieron 85 particpaciones, colegios ludotecas y jardines arrojando 3091 participaciones,  actividades desarrolladas en el mes de 5877, 2000 en promedio mes des del ni\u00f1o  y 1500 padres en promedio",meta4:8000.0,tipo:"Acumulativo",p24:8000.0,e24:8000.0,pct24:1.0,p25:8000.0,e25:8000.0,pct25:1.0,p26:8000.0,e26:8000.0,pct26:1.0},
+  {p:"Protegiendo generaciones",m:107,est:"",desc:"Construcci\u00f3n y dotaci\u00f3n de un jard\u00edn social para la primera infancia para prestaci\u00f3n de servicios a la comunidad",cual:"",meta4:1.0,tipo:"Acumulativo",p24:0.1,e24:0.1,pct24:1.0,p25:0.25,e25:0.25,pct25:1.0,p26:0.75,e26:0.0,pct26:0.0},
+  {p:"Protegiendo generaciones",m:108,est:"A trav\u00e9s del juego y la lectura, fortalecer habilidades y capacidades de los ni\u00f1os, ni\u00f1as y adolecentes de los sectores rurales y urbanos.",desc:"Mantener 7 espacios pedag\u00f3gicos para ni\u00f1os, ni\u00f1as y adolescentes en funcionamiento",cual:"Actualmente se cuenta con 5 espacios pedag\u00f3gicos y f\u00edsicos en funcionamiento y debidamente dotados. Tambien  2 espacios  en la zona rural con mobiliario ya se concertaron esos espacios los cuales estan ubicados en  montearroyo y sanantonio se realiza entrega oficial en el mes de Julio donde se hace la posecion del nuevo edil,",meta4:7.0,tipo:"Acumulativo",p24:7.0,e24:7.0,pct24:1.0,p25:7.0,e25:7.0,pct25:1.0,p26:7.0,e26:7.0,pct26:1.0},
+  {p:"Protegiendo generaciones",m:109,est:"",desc:"Diagn\u00f3stico, formulaci\u00f3n e inicio de la implementaci\u00f3n de la  Pol\u00edtica P\u00fablica de primera infancia, Infancia y Adolescencia",cual:"ya se tiene el borrador el proyecto de Acuerdo para pasar a Juridica se tiene los documentos tecnicos ya pasaron a revisi\u00f3n, ya se tiene un concepto por parte de planeaci\u00f3n efalta la subsanaci\u00f3n que tiene que hacer la consultoria.",meta4:1.0,tipo:"Acumulativo",p24:0.05,e24:0.05,pct24:1.0,p25:0.75,e25:0.75,pct25:1.0,p26:1.0,e26:0.95,pct26:0.95},
+  {p:"Protegiendo generaciones",m:110,est:"",desc:"Mantener la operatividad de las 8 sedes de atenci\u00f3n a la primera infancia",cual:"se realizaron arreglos  en mi ranchito de la motobomba , pintura en el jardin  san juanito( en san miguel se sigue con el procesos de las palomas ya que se sigue presentando  en mi primer tesoro se esta haciendo la gestion con la car para la poda de los arboles ya que estan obstaculizando, ya se hicieron los mantenimientos solicitados.  se esta se coordino para garantizar la permanencia del suministro del agua y tambien se realizaron ajustes en llaves.se realizo gestion con la epz para recoger 3 veces a la semana los residuos.",meta4:8.0,tipo:"Acumulativo",p24:8.0,e24:8.0,pct24:1.0,p25:8.0,e25:8.0,pct25:1.0,p26:8.0,e26:8.0,pct26:1.0},
+  {p:"Protegiendo generaciones",m:111,est:"Por medio del comit\u00e9 interinstituional para la eradiaci\u00f3n del trabajo infantil y protecci\u00f3n del joven trabajador CIETI, se ejectaran etrategias alineadas con e Plan Nacional Hogar de paso.",desc:"Aumentar en 3000 los beneficiarios de las estrategias para la prevenci\u00f3n, atenci\u00f3n del trabajo infantil y promoci\u00f3n de derechos en adolescentes.",cual:"Durante el periodo reportado se llev\u00f3 a cabo la segunda sesi\u00f3n del Comit\u00e9 Interinstitucional para la Erradicaci\u00f3n del Trabajo Infantil (CIETI), con la participaci\u00f3n de catorce (14) dependencias e instituciones vinculadas al comit\u00e9. En el desarrollo de la jornada se abordaron los siguientes temas: saludo e instalaci\u00f3n de la sesi\u00f3n, llamado a lista y verificaci\u00f3n del qu\u00f3rum, aprobaci\u00f3n del acta anterior, explicaci\u00f3n sobre el uso del Google Drive para el reporte de actividades y revisi\u00f3n de fechas de entrega, construcci\u00f3n y revisi\u00f3n de la actividad conmemorativa del D\u00eda Mundial contra el Trabajo Infantil programada para el 12 de junio de 2026, as\u00ed como el espacio de proposiciones, varios y cierre.Como resultado de los compromisos establecidos en la sesi\u00f3n, el 12 de junio de 2026 se desarroll\u00f3 una jornada interinstitucional de sensibilizaci\u00f3n en el marco de la conmemoraci\u00f3n del D\u00eda Mundial contra el Trabajo Infantil. La actividad cont\u00f3 con la participaci\u00f3n de diferentes instituciones educativas del municipio y el apoyo de las entidades integrantes del CIETI, logrando impactar aproximadamente a quinientos (500) estudiantes mediante acciones pedag\u00f3gicas, l\u00fadicas y de reflexi\u00f3n orientadas a la promoci\u00f3n de los derechos de los ni\u00f1os, ni\u00f1as y adolescentes y la prevenci\u00f3n del trabajo infantil.",meta4:3000.0,tipo:"Acumulativo",p24:750.0,e24:750.0,pct24:1.0,p25:750.0,e25:750.0,pct25:1.0,p26:750.0,e26:500.0,pct26:0.666667},
+  {p:"Protegiendo generaciones",m:112,est:"Implementar el programa protectores: que busca brindar las herramientas e informaci\u00f3n a padres y/o familias para hacer frente a los desafios del hoy, dando a conocer dicho programa en cojuntos residenciales, barrios y veredas del municipio.",desc:"Mantener la implementaci\u00f3n de 2 estrategias pedag\u00f3gicas de acuerdo con la Ley 2089 de 2021 para la prevenci\u00f3n del castigo f\u00edsico, tratos crueles, humillantes o degradantes contra la ni\u00f1ez y la adolescencia, y seg\u00fan lo estipulado en el Decreto Municipal No. 652-2022, en el marco de la resoluci\u00f3n de conflictos, pautas de crianza, etc.",cual:"En el marco de esta meta se desarrollan dos estrategias. Desde el programa de Infancia se realizan talleres dirigidos a padres de familia y cuidadores en temas de pautas de crianza y la estrategia \u201cCrianza Amorosa + Juego\u201d, orientada por el ICBF y en los colegios publicos y privados. se esta gestionando en conjunto arezzo para poder llevar los talleres pero se esta a la espera de cambio de nueva administraci\u00f3n para el ingreso. Del programa de primera infancia se hizo con el hogar de san miguel con 170 padres frutos del buen trato y se hizo la contrucci\u00f3n de un arbol donde los padres pudieran ver que es lo que quieren cosechar en sus hijos la estrategia por primera infancia se realiza n calle, campa\u00f1a radial, mural, que es la campa\u00f1a de sensbilizaci\u00f3n, se realizan 2 talleres de familia mensuales.",meta4:2.0,tipo:"Acumulativo",p24:2.0,e24:2.0,pct24:1.0,p25:2.0,e25:2.0,pct25:1.0,p26:2.0,e26:2.0,pct26:1.0},
+  {p:"ZipaJoven, Labrando futuro",m:113,est:"",desc:"Aumentar a 1000 los j\u00f3venes que participan de la Semana de la Juventud",cual:"programada para el mes de Octubre",meta4:1000.0,tipo:"Acumulativo",p24:1000.0,e24:1000.0,pct24:1.0,p25:1000.0,e25:1000.0,pct25:1.0,p26:1000.0,e26:0.0,pct26:0.0},
+  {p:"ZipaJoven, Labrando futuro",m:114,est:"*Ampliar la oferta de actividades para abarcar una variedad de intereses juveniles (deportes, musica, arte, emprendimiento, tecnologia, etc)  * promover la participaci\u00f3n de las mujeres jovenes en todas las actividades. *Fortalecer la Red Municipal de jovenes como canal de participaci\u00f3n y organizaci\u00f3n.",desc:"Aumentar a 600 j\u00f3venes beneficiados con actividades de educaci\u00f3n, emprendimiento y fortalecimiento de procesos comunitarios desarrollados en la Casa de la Juventud",cual:"Se logr\u00f3 una participaci\u00f3n de j\u00f3venes en diversos escenarios de formaci\u00f3n, cultura, participaci\u00f3n y desarrollo social. Las actividades art\u00edsticas y culturales representaron el mayor nivel de asistencia, especialmente en danza urbana, ritmos latinos y t\u00e9cnica vocal. Se fortalecieron los mecanismos de participaci\u00f3n juvenil mediante acciones vinculadas al Consejo Municipal de Juventud y otros espacios de incidencia ciudadana. Se promovieron oportunidades de emprendimiento, formaci\u00f3n acad\u00e9mica y vinculaci\u00f3n laboral para la poblaci\u00f3n joven. Los resultados evidencian una amplia participaci\u00f3n juvenil y un fortalecimiento progresivo de los procesos culturales, formativos y de participaci\u00f3n ciudadana. Las estrategias implementadas permitieron ampliar la cobertura de atenci\u00f3n, fomentar el liderazgo juvenil y generar oportunidades para el desarrollo integral de los j\u00f3venes del municipio.",meta4:600.0,tipo:"Acumulativo",p24:100.0,e24:100.0,pct24:1.0,p25:400.0,e25:400.0,pct25:1.0,p26:433.0,e26:509.0,pct26:1.17552},
+  {p:"ZipaJoven, Labrando futuro",m:115,est:"",desc:"Implementar el observatorio de juventudes con informaci\u00f3n estad\u00edstica en circulaci\u00f3n",cual:"Se esta adelantando de manera tecnica el dash board para presentar en la sesi\u00f3n del 18 de Junio esto con el fin de dar cumplimiento del 50 % de la meta. Gracias a la creaci\u00f3n del Observatorio Social se va a tener mas control y seguimiento en la informaci\u00f3n estadistica y del Data del municipio para esta poblaci\u00f3n,",meta4:1.0,tipo:"Acumulativo",p24:0.0,e24:0.0,pct24:0.0,p25:0.4,e25:0.4,pct25:1.0,p26:1.0,e26:0.5,pct26:0.5},
+  {p:"ZipaJoven, Labrando futuro",m:116,est:"desarrolar una campa\u00f1a de Marketing integral en redes, medios locales, y plataformas digitales, para generar mas informacion en la poblaci\u00f3n acerca de la oferta social",desc:"Mantener la asistencia t\u00e9cnica, psicosocial, jur\u00eddica y de trabajo social a las 3 instancias de participaci\u00f3n juvenil  (CMJ, CCyDJ y plataforma de juventudes)",cual:"se realizo capacitacion con la ESAP el 16 de mayo, Se particip\u00f3 en la reuni\u00f3n del Consejo de Educaci\u00f3n, desarrollada con el prop\u00f3sito de fortalecer la articulaci\u00f3n interinstitucional para generar beneficios dirigidos a los j\u00f3venes consejeros del Consejo Municipal de Juventud (CMJ), espec\u00edficamente en relaci\u00f3n con la exoneraci\u00f3n del servicio social estudiantil obligatorio.",meta4:3.0,tipo:"Acumulativo",p24:3.0,e24:3.0,pct24:1.0,p25:3.0,e25:3.0,pct25:1.0,p26:3.0,e26:3.0,pct26:1.0},
+  {p:"ZipaJoven, Labrando futuro",m:117,est:"",desc:"Formulaci\u00f3n e inicio de la implementaci\u00f3n de la  Pol\u00edtica P\u00fablica de las Juventudes en el municipio",cual:"Se tiene convenio con la Universidad del Bosque, se realizo el plan de trabajo proyectado por la universidad del Bosque y la secretaria de Familia, las mesas institucionales, las mesas focales, la fase de agenda publica y la fase de la parrticipaci\u00f3n ciudadana para el diagnostico, se proyecta para tener en Junio el diagnostico para la formulaci\u00f3n.",meta4:1.0,tipo:"Acumulativo",p24:0.0,e24:0.0,pct24:0.0,p25:0.0,e25:0.0,pct25:0.0,p26:0.6,e26:0.6,pct26:1.0},
+  {p:"ZipaJoven, Labrando futuro",m:118,est:"Articular esfuerzos con instituciones educativas, empresas, organizaciones juveniles y lideres comunitarios, para fortalecer los procesos y proyectos juveniles",desc:"Aumentar a 50 los proyectos juveniles de emprendimiento formulados, viabilizados e implementados en el municipio",cual:"Caracterizados a mayo: 33 de los cuales: se han trabajado con los 33 en jovenes tiburones, en viabilizacion se tienen 12, formulados 7, implementados 14",meta4:50.0,tipo:"Acumulativo",p24:5.0,e24:5.0,pct24:1.0,p25:20.0,e25:20.0,pct25:1.0,p26:32.0,e26:33.0,pct26:1.03125},
+  {p:"ZipaJoven, Labrando futuro",m:119,est:"Capacitar a los lideres juveniles en gesti\u00f3n de proyectos, liderazgo y participaci\u00f3n ciudadana; fortaleciendola plataforma de juventudes y los diferentes espacios de incidencia juvenil * Involucrar a influenciadores juveniles y lideres de opinion para amplificar el mensaje hacia la poblaci\u00f3n juvenil en cuanto a participaci\u00f3n e incidencia.",desc:"Crear 5 semilleros de participaci\u00f3n e incidencia juvenil",cual:"Se tiene 1 semillero de liderazgo   1 de Salud Mental  1 Marketing digital y 1 de programacion que se hizo en el 2025",meta4:5.0,tipo:"No acumulativo",p24:1.0,e24:1.0,pct24:1.0,p25:2.0,e25:2.0,pct25:1.0,p26:4.0,e26:4.0,pct26:1.0},
+  {p:"Mujeres poderosas",m:120,est:"se priorizara la vinculaci\u00f3n y el acceso de las mujeres al area psicosocial, para la promoci\u00f3n de la salud mental, realizando orientaciones, seguimientos, acompa\u00f1amiento y campa\u00f1as de sensibilizacion, talleres, videos para prevenir todo tipo de violencia.",desc:"Crear y poner en funcionamiento la L\u00ednea P\u00farpura, para atenci\u00f3n y activaci\u00f3n de RIA frente a cualquier tipo de violencia contra las mujeres",cual:"La L\u00ednea P\u00farpura se encuentra en funcionamiento, brindando atenci\u00f3n, orientaci\u00f3n, seguimiento y activaci\u00f3n de rutas frente a cualquier tipo de violencia contra las mujeres.  Durante el per\u00edodo reportado se realizaron 124 atenciones e intervenciones, beneficiando e impactando a mujeres del municipio mediante la atenci\u00f3n de casos relacionados con violencia psicol\u00f3gica, f\u00edsica, sexual, econ\u00f3mica, patrimonial y de g\u00e9nero, as\u00ed como afectaciones emocionales, asesor\u00edas jur\u00eddicas, orientaci\u00f3n psicol\u00f3gica, seguimientos y activaci\u00f3n de rutas de atenci\u00f3n.  Estas acciones han permitido fortalecer la protecci\u00f3n de los derechos de las mujeres, garantizando atenci\u00f3n oportuna, acompa\u00f1amiento integral y acceso a los servicios institucionales requeridos.",meta4:1.0,tipo:"Acumulativo",p24:0.1,e24:0.1,pct24:1.0,p25:1.0,e25:1.0,pct25:1.0,p26:1.0,e26:1.0,pct26:1.0},
+  {p:"Mujeres poderosas",m:121,est:"",desc:"Creaci\u00f3n y puesta en funcionamiento del observatorio de mujer y equidad de g\u00e9nero",cual:"ya te tiene el acuerdo municipal que da la creaci\u00f3n del Observatorio, el 2% hace referencia al proceso de transferencia que dar\u00e1 la Universidad de la sabana a la Administraci\u00f3n para poner ya en funcionamiento el Observatorio",meta4:1.0,tipo:"Acumulativo",p24:0.0,e24:0.0,pct24:0.0,p25:0.4,e25:0.4,pct25:1.0,p26:1.0,e26:0.98,pct26:0.98},
+  {p:"Mujeres poderosas",m:122,est:"se priorizara la vinculaci\u00f3n y el acceso de las mujeres al area psicosocial, para la promoci\u00f3n de la salud mental, realizando orientaciones, seguimientos, acompa\u00f1amiento y campa\u00f1as de sensibilizacion, talleres, videos para prevenir todo tipo de violencia.",desc:"Brindar acompa\u00f1amiento y orientaci\u00f3n psicosocial a 1200 mujeres, promoviendo e implementando redes de apoyo comunitario.",cual:"Durante el per\u00edodo reportado se registraron 358 participaciones, correspondientes a atenciones brindadas a trav\u00e9s de los componentes jur\u00eddico, psicol\u00f3gico, trabajo social y L\u00ednea P\u00farpura. De estas participaciones, se impact\u00f3 de manera directa a 297 personas, principalmente mujeres, quienes recibieron orientaci\u00f3n, acompa\u00f1amiento y atenci\u00f3n integral para la garant\u00eda y restablecimiento de sus derechos.  Las intervenciones incluyeron asesor\u00edas jur\u00eddicas, atenci\u00f3n psicol\u00f3gica, acompa\u00f1amiento psicosocial, seguimiento de casos y activaci\u00f3n de rutas de atenci\u00f3n, fortaleciendo la protecci\u00f3n y el acceso a los servicios institucionales para la poblaci\u00f3n beneficiaria.",meta4:1200.0,tipo:"Acumulativo",p24:500.0,e24:500.0,pct24:1.0,p25:230.0,e25:230.0,pct25:1.0,p26:233.0,e26:297.0,pct26:1.274678},
+  {p:"Mujeres poderosas",m:123,est:"",desc:"Beneficiar a 8000 mujeres que participan en la oferta que brinda la Casa Social de la Mujer entorno al fortalecimiento de habilidades productivas, emprendimientos y orientaci\u00f3n laboral, as\u00ed como prevenci\u00f3n, atenci\u00f3n de violencias contra la mujer y promoci\u00f3n de los derechos humanos.",cual:"Durante el per\u00edodo reportado se realizaron 3.127 inscripciones en los diferentes programas y actividades ofertadas, logrando impactar a 2278 personas, de las cuales 952 son mujeres dia de la mujer con mas de 500 mujeres y dia de la madre con participacion de 69  Del total de personas impactadas, 2278 evidenciando una amplia participaci\u00f3n y cobertura de las acciones desarrolladas en beneficio de la comunidad.",meta4:8000.0,tipo:"Acumulativo",p24:5000.0,e24:5000.0,pct24:1.0,p25:6000.0,e25:6000.0,pct25:1.0,p26:7000.0,e26:2278.0,pct26:0.325429},
+  {p:"Mujeres poderosas",m:124,est:"fortalecer las unidades productivas, creando una base de datos de cada proyectos productiv, asi ismo promover e incentivar a capacitaciones de formalizaci\u00f3n",desc:"Viabilizar 80 proyectos productivos de mujeres del centro de emprendimiento e innovaci\u00f3n de la Casa Social de la Mujer",cual:"Durante la vigencia 2026 se han caracterizado 92 emprendimientos, principalmente en los sectores de gastronom\u00eda, manualidades, tejidos y otras actividades productivas. Como parte de la estrategia de fortalecimiento empresarial. Entre las acciones desarrolladas se destacan la vinculaci\u00f3n con C\u00e1mara de Comercio, procesos de coaching empresarial, capacitaciones en manipulaci\u00f3n de alimentos, formaci\u00f3n en gastronom\u00eda y vitrinismo con el SENA, fortalecimiento de capacidades empresariales, participaci\u00f3n en ferias y convocatorias, as\u00ed como la postulaci\u00f3n de 10 emprendimientos a la Feria Talante en Corferias.  se cuenta con 23 emprendimientos viabilizados.",meta4:80.0,tipo:"No acumulativo",p24:0.0,e24:0.0,pct24:0.0,p25:35.0,e25:35.0,pct25:1.0,p26:30.0,e26:23.0,pct26:0.766667},
+  {p:"Mujeres poderosas",m:125,est:"",desc:"Implementar 1 espacio para la visibilizaci\u00f3n de unidades productivas caracterizadas y formalizadas (Tienda Rosa)",cual:"Durante la vigencia 2026 se adelant\u00f3 la implementaci\u00f3n de la Tienda Rosa, mediante la caracterizaci\u00f3n de emprendimientos, la participaci\u00f3n en mercados campesinos, ferias comerciales y reuniones organizativas para el fortalecimiento de las unidades productivas vinculadas a la Casa Social de la Mujer.  Como parte de esta estrategia se dio inicio al programa \u201cMecatico Rosa\u201d, orientado a promover los emprendimientos gastron\u00f3micos, y se fortaleci\u00f3 la visibilizaci\u00f3n de los productos en diferentes escenarios comerciales del municipio y la regi\u00f3n. Adicionalmente, se adecu\u00f3 el espacio f\u00edsico mediante la adquisici\u00f3n de una vitrina de exhibici\u00f3n.  Actualmente, la Tienda Rosa se encuentra en funcionamiento, contando con un espacio adecuado para la promoci\u00f3n y comercializaci\u00f3n de productos, con atenci\u00f3n al p\u00fablico de lunes a s\u00e1bado en horario de 8:30 a.m. a 12:00 m. y de 2:00 p.m. a 6:00 p.m., contribuyendo al fortalecimiento econ\u00f3mico y comercial de los emprendimientos liderados por mujeres.",meta4:1.0,tipo:"Acumulativo",p24:0.0,e24:0.0,pct24:0.0,p25:1.0,e25:1.0,pct25:1.0,p26:1.0,e26:0.8,pct26:0.8},
+  {p:"Mujeres poderosas",m:126,est:"",desc:"Realizar 16 jornadas de descentralizaci\u00f3n de los servicios ofertados en la Casa Social de la Mujer en los sectores rurales y urbanos del municipio",cual:"Durante lo corrido de la vigencia 2026 se han desarrollado 16 jornadas de descentralizaci\u00f3n, mediante talleres psicosociales, actividades comunitarias, jornadas familiares, socializaciones institucionales y espacios de participaci\u00f3n realizados en diferentes sectores urbanos y rurales del municipio, incluyendo instituciones educativas, empresas, veredas y escenarios comunitarios.  Estas acciones han permitido acercar la oferta institucional a la comunidad, fortaleciendo la participaci\u00f3n ciudadana, la promoci\u00f3n de derechos y el acceso a servicios de orientaci\u00f3n y acompa\u00f1amiento.",meta4:16.0,tipo:"Acumulativo",p24:16.0,e24:16.0,pct24:1.0,p25:16.0,e25:16.0,pct25:1.0,p26:16.0,e26:16.0,pct26:1.0},
+  {p:"ZipaDorada: A\u00f1os de Alegr\u00eda",m:127,est:"fortaecer las redes de apoyo a los cuidadores del adulto mayor",desc:"Mantener a 1758 adultos mayores beneficiados a trav\u00e9s del Programa Colombia Mayor",cual:"El programa Renta Joven opera a trav\u00e9s de dos componentes: Componente de Transferencias Monetarias para la Educaci\u00f3n Superior  Componente de Promoci\u00f3n Social y Bienestar Integral:ACTUALMENTE: 165 BENEFICIARIOS Actualmente, est\u00e1n en ejecuci\u00f3n solo l\u00edneas de intervenci\u00f3n Valoraci\u00f3n del Cuidado.  Poblaci\u00f3n focalizada por Prosperidad Social madres cabeza de Hogar, Sisb\u00e9n A, con al menos un ni\u00f1o menor de 6 a\u00f1os en el Hogar  ACTUALMENTE: 519 HOGARES BENEFICIADOS Colombia Mayor\u201d busca aumentar la protecci\u00f3n a los adultos mayores por medio de la entrega de un subsidio econ\u00f3mico para aquellos que se encuentran desamparados, que no cuentan con una pensi\u00f3n, o viven en la extrema pobreza.ACTUALMENTE: 3583 BENEFICIARIOS.",meta4:1758.0,tipo:"Acumulativo",p24:1758.0,e24:1758.0,pct24:1.0,p25:1758.0,e25:1734.0,pct25:0.986348,p26:1758.0,e26:3583.0,pct26:2.038111},
+  {p:"ZipaDorada: A\u00f1os de Alegr\u00eda",m:128,est:"realizar seguimiento a los hogares geriatricos en el cumplimiento de la normatividad actual, frente a la protecci\u00f3n del adulto mayor en situaci\u00f3n de vulnerabilidad.",desc:"Aumentar a 65 adultos mayores institucionalizados",cual:"58 Personas Mayores en Fundaci\u00f3n Hogar Canitas saludables  3 Personas Mayores en Beneficencia de Cundinamarca.   Se garantiza la manutenci\u00f3n completa de los adultos mayores en estos espacios.  Canitas Saludables: Convenio 354-2025 Beneficencia: Convenio 290-2025   Se realiza la contrataci\u00f3n de enfermera para realizar seguimiento a los Hogares del Municipio en los que se encuentran estos 61 adultos mayores.",meta4:65.0,tipo:"Acumulativo",p24:56.0,e24:56.0,pct24:1.0,p25:61.0,e25:61.0,pct25:1.0,p26:63.0,e26:61.0,pct26:0.968254},
+  {p:"ZipaDorada: A\u00f1os de Alegr\u00eda",m:129,est:"Mantenimiento de los satelites para el adulto mayor y ampliacion de cobertura en nuevos sectores urbanos y rurales.",desc:"Aumentar a 1200 adultos mayores beneficiados mediante los sat\u00e9lites en los sectores rurales y urbanos del municipio",cual:"En los 28 sat\u00e9lites urbanos y rurales se registraron 1227 personas mayores atendidas a trav\u00e9s de actividades de envejecimiento activo, actividad f\u00edsica y ludicorecreativas, pedagogicas.  Para garantizar el funcionamiento de estos sat\u00e9lites se realiza la contrataci\u00f3n de: 2 trabajadoras sociales, 2 psic\u00f3logos.   Contrato con Act\u00edvate: Actividad f\u00edsica, recreaci\u00f3n y deporte especial para los adultos mayores.  Contrato de Municipalidad: Paquetes nutricionales y actividades",meta4:1200.0,tipo:"Acumulativo",p24:800.0,e24:800.0,pct24:1.0,p25:924.0,e25:924.0,pct25:1.0,p26:1062.0,e26:1227.0,pct26:1.155367},
+  {p:"ZipaDorada: A\u00f1os de Alegr\u00eda",m:130,est:"",desc:"Puesta en funcionamiento el Centro d\u00eda Santa Ana.",cual:"1 Centro D\u00eda denominado Club del Adulto Mayor Santa Ana en funcionamiento  con 1227  Usuarios.  Se realiza la operaci\u00f3n y funcionamiento del Centro D\u00eda  con actividades l\u00fadicas, recreativas, de empredimiento, generacionales, aprovechamiento del tiempo libre, atenci\u00f3n psicosocial, terap\u00e9utica, prevenci\u00f3n de la enfermedad, promoci\u00f3n de la salud, entre otras.",meta4:1.0,tipo:"Acumulativo",p24:1.0,e24:1.0,pct24:1.0,p25:1.0,e25:1.0,pct25:1.0,p26:1.0,e26:1.0,pct26:1.0},
+  {p:"ZipaDorada: A\u00f1os de Alegr\u00eda",m:131,est:"Implementacion de comedores para personas mayores",desc:"Mantener a 1200 adultos mayores beneficiados con entregas de apoyo nutricional",cual:"Paquete nutricional 550 (mensuales) y raci\u00f3n caliente 360 (diarias) adultos mayores de diferentes sat\u00e9lites municipales con grado de vulnerabilidad, mejorando las condiciones nutriciales de los mismos.    Paquete nutricional: 15 puntos - sat\u00e9lites. Raci\u00f3n Caliente: 7 puntos - sat\u00e9lites.",meta4:1200.0,tipo:"Acumulativo",p24:770.0,e24:770.0,pct24:1.0,p25:910.0,e25:910.0,pct25:1.0,p26:1100.0,e26:910.0,pct26:0.827273},
+  {p:"ZipaDorada: A\u00f1os de Alegr\u00eda",m:132,est:"",desc:"Beneficiar a 1700 adultos mayores con apoyo en atenci\u00f3n integral",cual:"En promedio se atendieron 2,329 adultos mayores al mes de Mayo en atenci\u00f2n integral. satelites: 1227 institucionalizados : 61 razon caliente: 360 paquetes nutricionales: 550 atencion en hogares en larga estancia: 131  Se garantiza seguimiento a las Instituciones de Larga Estancia, donde se encuentran institucionalizados 58 adultos mayores del Municipio de Zipaquir\u00e1.   Canitas Saludables: Convenio 088-2026 Beneficencia: Convenio y 3 personas mayores",meta4:1700.0,tipo:"Acumulativo",p24:1700.0,e24:1641.0,pct24:0.965294,p25:1700.0,e25:1700.0,pct25:1.0,p26:1700.0,e26:2329.0,pct26:1.37},
+  {p:"ZipaDorada: A\u00f1os de Alegr\u00eda",m:133,est:"",desc:"Actualizar la Pol\u00edtica P\u00fablica de Vejez y Envejecimiento y la RIA",cual:"Se esta levantando la consolidacion de los seguimiento de vigencia para dar inicio a la etapa de evaluaci\u00f3n",meta4:1.0,tipo:"Acumulativo",p24:0.0,e24:0.0,pct24:0.0,p25:0.0,e25:0.0,pct25:0.0,p26:1.0,e26:0.2,pct26:0.2},
+  {p:"ZipaDorada: A\u00f1os de Alegr\u00eda",m:134,est:"Incrementar la participaci\u00f3n a traves de la creaci\u00f3n de un semillero de lideres de la problacion adulto mayor",desc:"Creaci\u00f3n de Semilleros de Adulto Mayor",cual:"1 Semillero de Participaci\u00f3n esta proyectado para el 30 de Junio ( se realiza de manera bimestral)",meta4:1.0,tipo:"Acumulativo",p24:0.0,e24:0.0,pct24:0.0,p25:1.0,e25:1.0,pct25:1.0,p26:1.0,e26:1.0,pct26:1.0},
+  {p:"Zipa, ciudad para todos",m:135,est:"Fortalecimiento del centro integral de servicios - cis",desc:"Atender a 900 personas con discapacidad en el centro Integral de Servicios CIS y su descentralizaci\u00f3n",cual:"Durante el primer semestre de 2026, la meta de atenci\u00f3n a personas con discapacidad en el Centro Integral de Servicios (CIS) y su descentralizaci\u00f3n registra un cumplimiento sobresaliente, alcanzando 812 personas atendidas frente a una programaci\u00f3n anual de 706 personas, lo que representa un 115% de cumplimiento, superando la meta prevista para la vigencia. Este resultado se logr\u00f3 mediante la prestaci\u00f3n continua de apoyos terap\u00e9uticos, la atenci\u00f3n en el CIS-BRAILE, y el desarrollo de actividades descentralizadas (tamizajes, jornadas de sensibilizaci\u00f3n, visitas domiciliarias y estrategias como \"Vuelve al Parque\"), que han permitido ampliar la cobertura territorial del programa. La meta se clasifica como cumplida, con un margen de 106 personas por encima de lo programado para 2026.",meta4:900.0,tipo:"Acumulativo",p24:317.0,e24:317.0,pct24:1.0,p25:650.0,e25:650.0,pct25:1.0,p26:706.0,e26:812.0,pct26:1.150142},
+  {p:"Zipa, ciudad para todos",m:136,est:"Desarrollo de habilidades y espacios laborales a travez de foros sobre el abordaje de la discapacidad",desc:"Mantener la atenci\u00f3n a 158 PcD en procesos terap\u00e9uticos habilidades para la vida y aprendizaje",cual:"\"45 Meraki 33 Cazpi 60 Esperanza Mariana 30 Guadalupe 30 Geyplan 19 ICAL\" PARA UN TOTAL DE 217 ATENCIONES",meta4:158.0,tipo:"Acumulativo",p24:158.0,e24:156.0,pct24:0.987342,p25:158.0,e25:158.0,pct25:1.0,p26:158.0,e26:217.0,pct26:1.373418},
+  {p:"Zipa, ciudad para todos",m:137,est:"estrategia cuidando a cuidadores: subsidio que se considere como una ayuda para los cuidadores",desc:"Implementar 3 estrategias dirigidas a cuidadores de PcD",cual:"\"1. Paquete Nutricional:  250 personas beneficiarias del paquete nutricoonal durante el mes de mayo 2026.  2. Cuidando al Cuidador: 72 cuidadores recibieron talleres y capacitaci\u00f3n, con 128 atenciones.  3.Emprendimientos: 7 personas participaron en Huerta, con 13 sesiones.  4. Subsidios: 14 beneficiados gobernaci\u00f3n\"",meta4:3.0,tipo:"Acumulativo",p24:3.0,e24:3.0,pct24:1.0,p25:3.0,e25:3.0,pct25:1.0,p26:3.0,e26:3.0,pct26:1.0},
+  {p:"Zipa, ciudad para todos",m:138,est:"",desc:"Realizar diagn\u00f3stico y reformulaci\u00f3n de la Pol\u00edtica P\u00fablica de Discapacidad",cual:"Esta politica publica por el resorte nacional esta a cargo la secretaria de Gobierno, ellos estan realizando el ejercicio de la etapa de evaluaci\u00f3n.",meta4:1.0,tipo:"Acumulativo",p24:0.0,e24:0.0,pct24:0.0,p25:0.0,e25:0.0,pct25:0.0,p26:1.0,e26:0.2,pct26:0.2},
+  {p:"Zipa, ciudad para todos",m:139,est:"Fortalecimiento del banco de ayudas tecnicas",desc:"Aumentar a 400 la cantidad de personas con discapacidad beneficiadas con ayudas t\u00e9cnicas",cual:"Durante la vigencia 2026 se realiz\u00f3 la entrega de 22 ayudas t\u00e9cnicas, entre las que se incluyen sillas de ruedas, caminadores, muletas y una silla sanitaria, contribuyendo al mejoramiento de la movilidad, autonom\u00eda y calidad de vida de las personas beneficiarias.  Adicionalmente, el 27 de mayo se desarroll\u00f3 una jornada de valoraci\u00f3n visual en la que se atendieron 59 personas, y se tiene programada una nueva entrega masiva de ayudas t\u00e9cnicas durante el mes de junio.",meta4:400.0,tipo:"Acumulativo",p24:100.0,e24:100.0,pct24:1.0,p25:194.0,e25:194.0,pct25:1.0,p26:53.0,e26:22.0,pct26:0.415094},
+  {p:"Zipa, ciudad para todos",m:140,est:"proponr espacios de conversacion para la poblaci\u00f3n LGBTIQ+ para abordar temas de historias de vida, testimonios, perspectivas, y apoyo de modo que se genere espacios seguros",desc:"Aumentar a 200 el n\u00famero de personas de la comunidad LGBTIQ+ que reciben atenci\u00f3n integral, formaci\u00f3n en habilidades para el trabajo, construcci\u00f3n de redes comunitarias y familiares de cuidado para la prevenci\u00f3n de violencias basadas en g\u00e9nero y apoyo en iniciativas propias.",cual:"Durante la vigencia 2026 se ha brindado atenci\u00f3n a 45 personas de la comunidad LGBTIQ+, a trav\u00e9s de charlas, talleres, orientaci\u00f3n psicosocial, activaci\u00f3n de rutas de atenci\u00f3n, procesos de emprendimiento, promoci\u00f3n de h\u00e1bitos de vida saludable y prevenci\u00f3n de infecciones de transmisi\u00f3n sexual (ITS).  Las acciones desarrolladas han permitido fortalecer la garant\u00eda de derechos, la inclusi\u00f3n y el acceso a la oferta institucional de esta poblaci\u00f3n. Asimismo, se ha garantizado la atenci\u00f3n y acompa\u00f1amiento mediante profesionales de apoyo para la implementaci\u00f3n de las estrategias dirigidas a la comunidad LGBTIQ+.",meta4:200.0,tipo:"Acumulativo",p24:72.0,e24:72.0,pct24:1.0,p25:139.0,e25:139.0,pct25:1.0,p26:158.0,e26:55.0,pct26:0.348101},
+  {p:"Zipa, ciudad para todos",m:141,est:"",desc:"Realizar la caracterizaci\u00f3n de la poblaci\u00f3n LGBTIQ+ y poner en marcha estrategias en pro de esta comunidad",cual:"para un total acumulado de 100 personas caracterizadas a Mayo.    As\u00ed mismo, se dio inicio a la implementaci\u00f3n de estrategias orientadas a la atenci\u00f3n integral de la poblaci\u00f3n: 1. Realizar atenci\u00f3n psicosocial de acuerdo con la necesidad sentida de la comunidad.  2. Direccionamiento de los proyectos productivos que ofrece la Casa Social de la Mujer de acuerdo a su oferta institucional.  3. Acompa\u00f1amiento en las movilizaciones sociales y comunitarias de la poblaci\u00f3n LGTBIQ+  4. Acompa\u00f1amiento a representantes LGTBIQ+ para ser parte de diferentes instancias de participaci\u00f3n en el municipio.",meta4:1.0,tipo:"Acumulativo",p24:0.0,e24:0.0,pct24:0.0,p25:1.0,e25:1.0,pct25:1.0,p26:1.0,e26:0.6,pct26:0.6},
+  {p:"Zipa, ciudad para todos",m:142,est:"",desc:"Mantener en funcionamiento las 3  Comisar\u00edas de Familia",cual:"Las tres Comisar\u00edas de Familia operan con atenci\u00f3n continua, garantizando la prestaci\u00f3n de servicios jur\u00eddicos, sociales y administrativos para los procesos de protecci\u00f3n familiar y atenci\u00f3n de casos.  Desde la Administraci\u00f3n Municipal se garantiza:  Arrendamiento de las instalaciones donde operan las Comisar\u00edas de Familia. Servicio de vigilancia. Pago de servicios p\u00fablicos. Aseo permanente. Papeler\u00eda e implementos de cafeter\u00eda. Veh\u00edculo para la realizaci\u00f3n de visitas y actuaciones propias de las Comisar\u00edas. Talento humano conformado por 3 trabajadores sociales, 3 abogados, 3 notificadores y 1 psic\u00f3loga.  Adicionalmente, se encuentra en proceso la gesti\u00f3n y proyecci\u00f3n para la adquisici\u00f3n de equipos tecnol\u00f3gicos y mobiliario destinados al fortalecimiento de las tres Comisar\u00edas de Familia, con el fin de mejorar las condiciones de atenci\u00f3n y la prestaci\u00f3n del servicio a la comunidad.",meta4:3.0,tipo:"Acumulativo",p24:3.0,e24:3.0,pct24:1.0,p25:3.0,e25:3.0,pct25:1.0,p26:3.0,e26:3.0,pct26:1.0},
+  {p:"Zipa, ciudad para todos",m:143,est:"",desc:"Actualizar e implementar el Sistema de Informaci\u00f3n de Grupos Poblacionales",cual:"Se cuenta con bases de datos y tableros de control en los diferentes programas a trav\u00e9s de tableros DASHBORD.",meta4:1.0,tipo:"Acumulativo",p24:0.4,e24:0.4,pct24:1.0,p25:1.0,e25:1.0,pct25:1.0,p26:1.0,e26:1.0,pct26:1.0},
+  {p:"Zipa, ciudad para todos",m:144,est:"",desc:"Crear e implementar la estrategia de \"Manzanas del Cuidado\" en funci\u00f3n de cuidadores, mujeres,  personas con discapacidad y NNA",cual:"Durante la vigencia 2026 se consolid\u00f3 la estrategia de Manzanas del Cuidado, realizando 56 caracterizaciones de personas cuidadoras y fortaleciendo la atenci\u00f3n integral mediante la dupla psicojur\u00eddica, jornadas de autocuidado, salud mental, musicoterapia y educaci\u00f3n flexible.  Asimismo, se avanz\u00f3 en la actualizaci\u00f3n y ajuste del Acuerdo Municipal de las Manzanas del Cuidado, la conformaci\u00f3n de la Mesa Consultiva de Cuidado y la construcci\u00f3n de la Ruta de las Personas Cuidadoras (Red Cuida) en articulaci\u00f3n con la Universidad de La Sabana. Igualmente, se fortalecieron alianzas institucionales para brindar procesos de formaci\u00f3n, certificaci\u00f3n de competencias laborales, emprendimiento, huertas caseras, actividades de bienestar y servicios de salud.  Adicionalmente, se garantiz\u00f3 el cuidado de ni\u00f1os y ni\u00f1as mediante la articulaci\u00f3n con las ludotecas, se cre\u00f3 un canal de informaci\u00f3n para las Manzanas del Cuidado y se desarrollaron acciones interinstitucionales orientadas al reconocimiento, bienestar y mejoramiento de la calidad de vida de las personas cuidadoras del municipio.",meta4:1.0,tipo:"Acumulativo",p24:0.0,e24:0.0,pct24:0.0,p25:0.3,e25:0.3,pct25:1.0,p26:1.0,e26:1.0,pct26:1.0},
+  {p:"Vivienda para cuidar y proteger",m:310,est:"",desc:"Realizar diagn\u00f3stico para la Pol\u00edtica P\u00fablica de Vivienda en el municipio",cual:"se ralizaron mesas de trabajo para la etapa de evaluacion que sera insumo para la etapa del diagnostico",meta4:1.0,tipo:"No acumulativo",p24:0.0,e24:0.0,pct24:0.0,p25:0.0,e25:0.0,pct25:0.0,p26:0.5,e26:0.05,pct26:0.1},
+  {p:"Vivienda para cuidar y proteger",m:311,est:"",desc:"Intervenir 20 copropiedades",cual:"*Comit\u00e9s fiduciarios en el marco del contrato 511/2022.  *Reuniones con los l\u00edderes de copropiedades con el fin de conformar la personer\u00eda jur\u00eddica.   *Se aprob\u00f3 manual de convivencia  *Se realiza acompa\u00f1amiento a los habitantes del proyecto de Villa Mariana de las diferentes torres, para determinar el l\u00edder y representante ante las reuniones, comit\u00e9s y toma de decisiones.   *Socializaci\u00f3n de la oferta institcuional de la SFDS, entrega de informaci\u00f3n de rutas de servicios, emergencia, para las 480 unidades habitacionales distribuidas en torres proyecto Villa Mariana.  *Se estableci\u00f3 articulaci\u00f3n interinstitcuional entre el municipio, constructora Capital y EPZ para el proyecto Villa Mariana en el mejoramiento del suministro de agua para las diferentes torres.   *Se realiz\u00f3 orientaci\u00f3n jur\u00eddica en propiedad horizontal, legitimidad de la propiedad y procesos jur\u00eddicos que llevan a un direccionamiento institucional.   *Se realizaron 5 jornadas con los habitantes de diferentes grupos etareos (mujeres, NNA, adultos mayores, PcD, entre otros) donde se sensibiliz\u00f3 en prevenci\u00f3n de Violencia Intrafamiliar, violencia de g\u00e9nero, existencia de la l\u00ednea p\u00farpura, oferta institucional de la Casa Social de la Mujer, estilos de vida saludable.  *Socializaci\u00f3n del Manual de Convencia con NNA.",meta4:20.0,tipo:"No acumulativo",p24:0.0,e24:0.0,pct24:0.0,p25:20.0,e25:20.0,pct25:1.0,p26:20.0,e26:10.0,pct26:0.5},
+  {p:"Vivienda para cuidar y proteger",m:312,est:"",desc:"Realizar 60 mejoramientos de vivienda en el sector urbano y rural del municipio priorizando a la poblaci\u00f3n vulnerable",cual:"para esta meta actualmente se encuentra radicado en Secretaria Juridica los estudios previos paea el proceso de contrataci\u00f3n de una  menor cuantia que busca ejecutar 31 mejoramientos que corresponden a la convocatoria 2024-2025. Respecto a la convocatoria 2025-2026 suna vez revisado los requisitos y realizadas visitas social y tecnica el 1 de mayo del 2026 se publico el listado con 26 potenciales beneficiarios al subsidio. Actialmente nos encontramos en la elaboraci\u00f3n de los presupuestos y los documentos soportes para presentar el proyecto de regalias .",meta4:60.0,tipo:"No acumulativo",p24:0.0,e24:0.0,pct24:0.0,p25:5.0,e25:5.0,pct25:1.0,p26:25.0,e26:31.0,pct26:1.24},
+  {p:"Vivienda para cuidar y proteger",m:313,est:"",desc:"Crear la estrategia de reubicaci\u00f3n basada en estudios t\u00e9cnicos de riesgo",cual:"se esta en la creacion de formatos, se tiene pendiente cita con calidad para codificar los formatos,  se esta avanzando en el procedimiento.",meta4:1.0,tipo:"No acumulativo",p24:0.0,e24:0.0,pct24:0.0,p25:0.0,e25:0.0,pct25:0.0,p26:0.5,e26:0.05,pct26:0.1}
+];
+
+// ── PROGRAM CONFIG ─────────────────────────────────────────────────────────
+const PROGS = [...new Set(DATA.map(d=>d.p))];
+const PCOL  = ['#64b5f6','#81c784','#f06292','#ffb74d','#4dd0e1','#ce93d8'];
+const PICO  = ['👶','🧑','♀','🌟','♿','🏠'];
+const PCFG  = {};
+PROGS.forEach((p,i)=>{ PCFG[p]={col:PCOL[i%PCOL.length],ico:PICO[i%PICO.length],idx:i}; });
+
+// ── HELPERS ────────────────────────────────────────────────────────────────
+const fmtN = n => n==null||isNaN(n)?'–':new Intl.NumberFormat('es-CO',{maximumFractionDigits:2}).format(n);
+function clr(p){ return p>=1?'var(--green)':p>=0.7?'var(--yellow)':'var(--red)'; }
+function ppill(p){
+  const v=(p*100).toFixed(0)+'%';
+  if(p>=1) return `<span class="pp ppg">✅ ${v}</span>`;
+  if(p>=0.7) return `<span class="pp ppy">🟡 ${v}</span>`;
+  return `<span class="pp ppr">🔴 ${v}</span>`;
+}
+function miniBar(p,col){
+  return `<div style="display:flex;align-items:center;gap:5px;min-width:90px">
+    <div class="pbar2" style="flex:1"><div class="pbar2f" style="width:${Math.min(p*100,100)}%;background:${col||clr(p)}"></div></div>
+    <span style="font-size:.66rem;font-weight:700;color:${clr(p)};min-width:30px">${(p*100).toFixed(0)}%</span>
+  </div>`;
+}
+function groupByProg(){
+  const g={};
+  DATA.forEach(d=>{
+    if(!g[d.p]) g[d.p]={metas:[],nc:0,na:0,nb:0};
+    g[d.p].metas.push(d);
+    if(d.pct26>=1) g[d.p].nc++;
+    else if(d.pct26>=0.7) g[d.p].na++;
+    else g[d.p].nb++;
+  });
+  Object.keys(g).forEach(k=>{
+    const m=g[k].metas;
+    g[k].avg26 = m.reduce((a,b)=>a+b.pct26,0)/m.length;
+    g[k].avg25 = m.reduce((a,b)=>a+b.pct25,0)/m.length;
+    g[k].avg24 = m.reduce((a,b)=>a+b.pct24,0)/m.length;
+  });
+  return g;
+}
+
+// ── SVG GAUGE ─────────────────────────────────────────────────────────────
+function svgGauge(pct, col, label, sub){
+  const circ=138.2, fill=Math.min(pct,1)*circ;
+  return `<div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:12px;min-width:180px;">
+    <svg width="50" height="50" viewBox="0 0 50 50">
+      <circle cx="25" cy="25" r="22" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="6"/>
+      <circle cx="25" cy="25" r="22" fill="none" stroke="${col}" stroke-width="6"
+        stroke-dasharray="${fill.toFixed(1)} ${circ}" stroke-dashoffset="34.6"
+        stroke-linecap="round" transform="rotate(-90 25 25)"/>
+      <text x="25" y="29" text-anchor="middle" fill="${col}" font-size="9.5" font-weight="700" font-family="Poppins">${(pct*100).toFixed(0)}%</text>
+    </svg>
+    <div>
+      <div style="font-size:.68rem;color:var(--text2);margin-bottom:1px">${label}</div>
+      <div style="font-size:1.1rem;font-weight:800;color:${col}">${(pct*100).toFixed(1)}%</div>
+      <div style="font-size:.6rem;color:var(--text2);margin-top:1px">${sub}</div>
+    </div>
+  </div>`;
+}
+
+// ── BUILD KPIs (INICIO) ───────────────────────────────────────────────────
+function buildKPIs(){
+  const total=DATA.length;
+  const nc=DATA.filter(d=>d.pct26>=1).length;
+  const na=DATA.filter(d=>d.pct26>=0.7&&d.pct26<1).length;
+  const nb=DATA.filter(d=>d.pct26<0.7).length;
+  const avg26=DATA.reduce((a,b)=>a+b.pct26,0)/total;
+  const avg25=DATA.reduce((a,b)=>a+b.pct25,0)/total;
+  const avg24=DATA.reduce((a,b)=>a+b.pct24,0)/total;
+
+  let h = `<div class="sec-lbl">Resumen Global · Plan de Desarrollo 2026</div>
+  <div class="kpi-row cols-5" style="margin-bottom:20px;">
+    <div class="kpi-card">
+      <div class="kpi-icon">📋</div>
+      <div class="kpi-lbl">Total Metas</div>
+      <div class="kpi-val">${total}</div>
+      <div class="kpi-sub">${PROGS.length} programas</div>
+    </div>
+    <div class="kpi-card g">
+      <div class="kpi-icon">✅</div>
+      <div class="kpi-lbl">Metas Cumplidas ≥100%</div>
+      <div class="kpi-val" style="color:var(--green)">${nc}</div>
+      <div class="kpi-sub">${(nc/total*100).toFixed(0)}% del total</div>
+      <span class="badge bg">Cumplidas</span>
+    </div>
+    <div class="kpi-card y">
+      <div class="kpi-icon">🟡</div>
+      <div class="kpi-lbl">Avance Alto 70–99%</div>
+      <div class="kpi-val" style="color:var(--yellow)">${na}</div>
+      <div class="kpi-sub">En proceso</div>
+      <span class="badge by">En proceso</span>
+    </div>
+    <div class="kpi-card r">
+      <div class="kpi-icon">🔴</div>
+      <div class="kpi-lbl">Avance Bajo &lt;70%</div>
+      <div class="kpi-val" style="color:var(--red)">${nb}</div>
+      <div class="kpi-sub">Requieren atención</div>
+      <span class="badge br">Bajo</span>
+    </div>
+    <div class="kpi-card t">
+      <div class="kpi-icon">📊</div>
+      <div class="kpi-lbl">Promedio Físico 2026</div>
+      <div class="kpi-val" style="color:var(--accent2)">${(avg26*100).toFixed(1)}%</div>
+      <div class="kpi-bar"><div class="kpi-bar-f" style="width:${Math.min(avg26*100,100)}%;background:var(--accent2)"></div></div>
+    </div>
+  </div>
+
+  <div class="sec-lbl">Avance Físico Promedio por Año</div>
+  <div class="kpi-row cols-3" style="margin-bottom:24px;">
+    <div class="kpi-card">
+      <div class="kpi-lbl">Promedio 2024</div>
+      <div class="kpi-val" style="color:#64b5f6">${(avg24*100).toFixed(1)}%</div>
+      <div class="kpi-bar"><div class="kpi-bar-f" style="width:${Math.min(avg24*100,100)}%;background:#64b5f6"></div></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-lbl">Promedio 2025</div>
+      <div class="kpi-val" style="color:#81c784">${(avg25*100).toFixed(1)}%</div>
+      <div class="kpi-bar"><div class="kpi-bar-f" style="width:${Math.min(avg25*100,100)}%;background:#81c784"></div></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-lbl">Promedio 2026</div>
+      <div class="kpi-val" style="color:#ffb74d">${(avg26*100).toFixed(1)}%</div>
+      <div class="kpi-bar"><div class="kpi-bar-f" style="width:${Math.min(avg26*100,100)}%;background:#ffb74d"></div></div>
+    </div>
+  </div>
+
+  <div class="sec-lbl">Avance 2026 por Programa</div>
+  <div class="kpi-row cols-4">`;
+
+  const g=groupByProg();
+  PROGS.forEach(p=>{
+    const v=g[p]; const cfg=PCFG[p];
+    h+=`<div class="kpi-card clickable" onclick="goToPrograma('${p}')">
+      <div class="kpi-icon">${cfg.ico}</div>
+      <div class="kpi-lbl">${p.substring(0,22)}</div>
+      <div class="kpi-val" style="color:${cfg.col}">${(v.avg26*100).toFixed(0)}%</div>
+      <div class="kpi-sub">${v.metas.length} metas · ✅${v.nc} 🟡${v.na} 🔴${v.nb}</div>
+      <div class="kpi-bar"><div class="kpi-bar-f" style="width:${Math.min(v.avg26*100,100)}%;background:${cfg.col}"></div></div>
+    </div>`;
+  });
+  h += '</div>';
+  document.getElementById('kpi-inicio').innerHTML = h;
+}
+
+function goToPrograma(prog){
+  showSec('programas', document.querySelectorAll('.nav-btn')[1]);
+  openPrograma(prog);
+}
+
+// ── BUILD PROG CARDS ───────────────────────────────────────────────────────
+function buildProgCards(){
+  const g=groupByProg(); let h='';
+  PROGS.forEach(p=>{
+    const v=g[p]; const cfg=PCFG[p]; const i=cfg.idx;
+    h+=`<div class="prog-card bg${i}" onclick="openPrograma('${p}')">
+      <div class="prog-icon">${cfg.ico}</div>
+      <div class="prog-name c${i}">${p}</div>
+      <div class="prog-info">${v.metas.length} metas · ✅${v.nc} cumplidas · 🟡${v.na} proceso · 🔴${v.nb} bajo</div>
+      <div class="pbar"><div class="pbar-f" style="width:${Math.min(v.avg26*100,100)}%;background:${cfg.col}"></div></div>
+      <div class="prog-pcts">
+        <span style="color:${cfg.col};font-weight:700">${(v.avg26*100).toFixed(1)}%</span>
+        <span style="color:var(--text2)">2026</span>
+      </div>
+    </div>`;
+  });
+  document.getElementById('prog-cards').innerHTML = h;
+}
+
+// ── OPEN PROGRAMA DETAIL ───────────────────────────────────────────────────
+let openProg = null;
+function openPrograma(prog){
+  openProg = prog;
+  document.querySelectorAll('.prog-card').forEach(c=>c.classList.remove('sel'));
+  const cards = document.querySelectorAll('.prog-card');
+  PROGS.forEach((p,i)=>{ if(p===prog) cards[i]?.classList.add('sel'); });
+
+  const metas = DATA.filter(d=>d.p===prog);
+  const cfg   = PCFG[prog];
+  const avg26 = metas.reduce((a,b)=>a+b.pct26,0)/metas.length;
+  const avg25 = metas.reduce((a,b)=>a+b.pct25,0)/metas.length;
+  const avg24 = metas.reduce((a,b)=>a+b.pct24,0)/metas.length;
+  const nc=metas.filter(d=>d.pct26>=1).length, na=metas.filter(d=>d.pct26>=0.7&&d.pct26<1).length, nb=metas.filter(d=>d.pct26<0.7).length;
+
+  document.getElementById('pd-title').innerHTML = `${cfg.ico} ${prog} <span style="font-size:.75rem;color:var(--text2);font-weight:400">&nbsp;·&nbsp; ${metas.length} metas en seguimiento</span>`;
+
+  // Mini gauges
+  document.getElementById('pd-gauges').innerHTML =
+    svgGauge(avg24,'#64b5f6','Avance 2024',`${metas.length} metas`) +
+    svgGauge(avg25,'#81c784','Avance 2025','Año anterior') +
+    svgGauge(avg26, cfg.col,'Avance 2026','Vigencia actual') +
+    `<div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;min-width:160px;">
+      <div style="font-size:.68rem;color:var(--text2);margin-bottom:6px;">Estado Metas 2026</div>
+      ${['✅ Cumplidas','🟡 En proceso','🔴 Bajo'].map((l,i)=>{
+        const v=[nc,na,nb][i]; const c=['var(--green)','var(--yellow)','var(--red)'][i];
+        return `<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+          <div style="font-size:.62rem;color:${c};width:72px">${l}</div>
+          <div style="flex:1;height:5px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;">
+            <div style="height:100%;width:${metas.length?Math.round(v/metas.length*100):0}%;background:${c};border-radius:3px;"></div>
+          </div>
+          <div style="font-size:.66rem;font-weight:700;color:${c};width:12px">${v}</div>
+        </div>`;
+      }).join('')}
+    </div>`;
+
+  // Meta cards
+  document.getElementById('meta-list').innerHTML = metas.map(d=>{
+    const c26=clr(d.pct26), c25=clr(d.pct25), c24=clr(d.pct24);
+    return `<div class="meta-card">
+      <div class="meta-head">
+        <span class="meta-num">M${d.m}</span>
+        <div class="meta-desc">${d.desc}</div>
+      </div>
+      ${d.est?`<div class="meta-est">📌 ${d.est}</div>`:''}
+      <div class="meta-cual" onclick="this.classList.toggle('open')" title="Clic para expandir">${d.cual||'Sin descripción cualitativa.'}</div>
+      <div class="yr-block">
+        ${[['2024',d.p24,d.e24,d.pct24,'#64b5f6'],['2025',d.p25,d.e25,d.pct25,'#81c784'],['2026',d.p26,d.e26,d.pct26,'#ffb74d'],['Cuatr.',d.meta4,'–','–','#ce93d8']].map(([yr,prog,ej,pct,col])=>`
+        <div class="yr-cell">
+          <div class="yr-head" style="color:${col}">${yr}</div>
+          <div class="yr-val" style="color:${pct!=='–'?clr(+pct):'var(--text2)'}">${pct!=='–'?fmtN(ej):'–'}</div>
+          <div class="yr-sub">Meta: ${fmtN(prog)}</div>
+          ${pct!=='–'?`<div class="yr-bar"><div class="yr-bar-f" style="width:${Math.min(+pct*100,100)}%;background:${clr(+pct)}"></div></div>`:''}
+        </div>`).join('')}
+      </div>
+      <div class="meta-bars">
+        <div class="mbar-row">
+          <div class="mbar-lbl">🏃 Avance Físico 2026</div>
+          <div class="mbar-track"><div class="mbar-f" style="width:${Math.min(d.pct26*100,100)}%;background:${c26}"></div></div>
+          <div class="mbar-val" style="color:${c26}">${(d.pct26*100).toFixed(1)}% ${ppill(d.pct26)}</div>
+        </div>
+        <div class="mbar-row">
+          <div class="mbar-lbl">📅 Meta 2026 Programada</div>
+          <div class="mbar-track"><div class="mbar-f" style="width:100%;background:rgba(255,255,255,0.15)"></div></div>
+          <div class="mbar-val" style="color:var(--text2)">Prog: ${fmtN(d.p26)} · Ejec: ${fmtN(d.e26)}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('prog-detail').style.display = 'block';
+  document.getElementById('prog-detail').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function closePD(){
+  document.getElementById('prog-detail').style.display='none';
+  document.querySelectorAll('.prog-card').forEach(c=>c.classList.remove('sel'));
+}
+
+// ── TABLE ─────────────────────────────────────────────────────────────────
+function buildTableFilters(){
+  const s=document.getElementById('f-prog');
+  s.innerHTML='<option value="">Todos</option>'+PROGS.map(p=>`<option>${p}</option>`).join('');
+}
+
+function filterTbl(){
+  const fp=document.getElementById('f-prog').value;
+  const fe=document.getElementById('f-est').value;
+  const ft=document.getElementById('f-tipo').value;
+  const fq=document.getElementById('f-bus').value.toLowerCase();
+  const rows=DATA.filter(d=>{
+    if(fp&&d.p!==fp) return false;
+    if(ft&&d.tipo!==ft) return false;
+    if(fe==='c'&&d.pct26<1) return false;
+    if(fe==='m'&&(d.pct26<0.7||d.pct26>=1)) return false;
+    if(fe==='b'&&d.pct26>=0.7) return false;
+    if(fq&&!String(d.m).includes(fq)&&!d.desc.toLowerCase().includes(fq)&&!d.p.toLowerCase().includes(fq)) return false;
+    return true;
+  });
+  document.getElementById('res-cnt').textContent=`Mostrando ${rows.length} de ${DATA.length} metas`;
+  const prow = (p,col)=>`<td class="${col}"><div style="display:flex;flex-direction:column;gap:2px">${miniBar(p)}</div></td>`;
+  document.getElementById('tbl-body').innerHTML = rows.map(d=>{
+    const cfg=PCFG[d.p]||{col:'#64b5f6',idx:0};
+    return `<tr>
+      <td style="font-weight:700;font-size:.8rem">${d.m}</td>
+      <td><span class="prog-tag bg${cfg.idx} c${cfg.idx}">${d.p}</span></td>
+      <td style="font-size:.65rem;color:var(--text2)">${d.tipo}</td>
+      <td style="font-size:.72rem;line-height:1.4;max-width:200px">${d.desc}</td>
+      <td style="font-size:.68rem;color:#a8c4e8;max-width:160px;line-height:1.4">${d.est||'–'}</td>
+      <td class="c24">${fmtN(d.p24)}</td>
+      <td class="c24">${fmtN(d.e24)}</td>
+      <td class="c24">${miniBar(d.pct24)}</td>
+      <td class="c25">${fmtN(d.p25)}</td>
+      <td class="c25">${fmtN(d.e25)}</td>
+      <td class="c25">${miniBar(d.pct25)}</td>
+      <td class="c26">${fmtN(d.p26)}</td>
+      <td class="c26">${fmtN(d.e26)}</td>
+      <td class="c26">${miniBar(d.pct26)}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────
+function showSec(id, btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  window.scrollTo(0,0);
+  if(id==='metas') filterTbl();
+}
+
+// ── CSV EXPORT ────────────────────────────────────────────────────────────
+function exportCSV(){
+  const h=['Meta','Programa','Tipo','Descripción','Estrategia',
+    'Meta 2024','Ejec 2024','% 2024','Meta 2025','Ejec 2025','% 2025','Meta 2026','Ejec 2026','% 2026'];
+  const rows=DATA.map(d=>[d.m,d.p,d.tipo,'"'+d.desc.replace(/"/g,"'")+'"','"'+(d.est||'').replace(/"/g,"'")+'"',
+    d.p24,d.e24,(d.pct24*100).toFixed(1)+'%',
+    d.p25,d.e25,(d.pct25*100).toFixed(1)+'%',
+    d.p26,d.e26,(d.pct26*100).toFixed(1)+'%']);
+  const csv=[h,...rows].map(r=>r.join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download='PDM_2026_Seguimiento.csv'; a.click();
+}
+function clearF(){
+  ['f-prog','f-est','f-tipo'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-bus').value=''; filterTbl();
+}
+
+// ── LOAD HTML DASHBOARD ───────────────────────────────────────────────────
+function loadHTML(e){
+  const file=e.target.files[0]; if(!file) return;
+  const msg=document.getElementById('up-msg-html');
+  if(!file.name.match(/\.html?$/i)){msg.style.color='var(--red)';msg.textContent='⚠️ Solo se aceptan archivos .html';return;}
+  msg.style.color='#00e676';
+  msg.textContent='⏳ Cargando nuevo dashboard...';
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    // Create a downloadable blob and redirect
+    const blob=new Blob([ev.target.result],{type:'text/html;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    // Offer download of the new file
+    const a=document.createElement('a');
+    a.href=url; a.download=file.name;
+    a.click();
+    msg.textContent=`✅ "${file.name}" listo. Descargado y disponible para reemplazar este dashboard.`;
+    // Also open in new tab so user can see it
+    setTimeout(()=>window.open(url,'_blank'),400);
+  };
+  reader.readAsText(file,'UTF-8');
+}
+
+// ── DATA STATUS ───────────────────────────────────────────────────────────
+function buildDataStatus(){
+  const el=document.getElementById('data-status'); if(!el) return;
+  const total=DATA.length;
+  const nc=DATA.filter(d=>d.pct26>=1).length;
+  const progs=[...new Set(DATA.map(d=>d.p))];
+  el.innerHTML=[
+    ['📋 Total metas',total,'var(--accent2)'],
+    ['✅ Cumplidas 2026',nc,'var(--green)'],
+    ['📂 Programas',progs.length,'#ffb74d'],
+    ['🗓 Años con datos','2024 · 2025 · 2026','#81c784'],
+  ].map(([l,v,c])=>`<div style="background:var(--bg3);border-radius:8px;padding:10px 14px;min-width:130px;">
+    <div style="font-size:.62rem;color:var(--text2);margin-bottom:3px;">${l}</div>
+    <div style="font-size:1.1rem;font-weight:800;color:${c}">${v}</div>
+  </div>`).join('');
+}
+
+// ── FILE UPLOAD ───────────────────────────────────────────────────────────
+function loadFile(e){
+  const file=e.target.files[0]; if(!file) return;
+  const msg=document.getElementById('up-msg');
+  msg.style.color='#00e676';
+  msg.textContent='⏳ Procesando...';
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    try{
+      const wb=XLSX.read(ev.target.result,{type:'array'});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      const json=XLSX.utils.sheet_to_json(ws,{defval:'',header:1});
+
+      // ── DETECTAR CORTE DESDE CELDA A1 ────────────────────────────────
+      // La celda A1 contiene el título: "AÑO 2026 CORTE A JUNIO" etc.
+      let corteDetectado = null;
+      const rawRows=XLSX.utils.sheet_to_json(ws,{defval:'',header:1});
+      if(rawRows.length>0){
+        const a1=String(rawRows[0][0]||'').trim();
+        if(a1){
+          // Buscar patrón "CORTE A <mes>" o "CORTE <mes>" dentro del título
+          const MESES={ENE:'Enero',FEB:'Febrero',MAR:'Marzo',ABR:'Abril',MAY:'Mayo',JUN:'Junio',
+            JUL:'Julio',AGO:'Agosto',SEP:'Septiembre',OCT:'Octubre',NOV:'Noviembre',DIC:'Diciembre',
+            ENERO:'Enero',FEBRERO:'Febrero',MARZO:'Marzo',ABRIL:'Abril',MAYO:'Mayo',JUNIO:'Junio',
+            JULIO:'Julio',AGOSTO:'Agosto',SEPTIEMBRE:'Septiembre',OCTUBRE:'Octubre',
+            NOVIEMBRE:'Noviembre',DICIEMBRE:'Diciembre'};
+          const m=a1.match(/CORTE\s+(?:A\s+)?([A-ZÁÉÍÓÚ]+)\s*(\d{4})?/i);
+          if(m){
+            const mes=MESES[m[1].toUpperCase()]||m[1];
+            // Año: del match, o buscar en el título, o año corriente
+            const yrMatch=a1.match(/(\d{4})/);
+            const anio=m[2]||yrMatch?.[1]||new Date().getFullYear();
+            corteDetectado=`${mes} ${anio}`;
+          } else {
+            // Si no hay "CORTE" explícito, intentar extraer mes del título completo
+            const m2=a1.match(/(ENERO|FEBRERO|MARZO|ABRIL|MAYO|JUNIO|JULIO|AGOSTO|SEPTIEMBRE|OCTUBRE|NOVIEMBRE|DICIEMBRE)/i);
+            const y2=a1.match(/(\d{4})/);
+            if(m2&&y2) corteDetectado=MESES[m2[1].toUpperCase()]+(` ${y2[1]}`);
+          }
+        }
+      }
+      // Fallback: detectar desde nombre del archivo
+      if(!corteDetectado){
+        const MESES2={ene:'Enero',feb:'Febrero',mar:'Marzo',abr:'Abril',may:'Mayo',jun:'Junio',
+          jul:'Julio',ago:'Agosto',sep:'Septiembre',oct:'Octubre',nov:'Noviembre',dic:'Diciembre'};
+        const nombre=file.name.toLowerCase();
+        const mM=nombre.match(/(ene|feb|mar|abr|may|jun|jul|ago|sep|oct|nov|dic)/i);
+        const yM=nombre.match(/(20\d{2})/);
+        if(mM&&yM) corteDetectado=MESES2[mM[1].toLowerCase()]+' '+yM[1];
+        else if(yM) corteDetectado=yM[1];
+      }
+      // Aplicar corte detectado al badge del header
+      if(corteDetectado){
+        document.getElementById('corte-badge').innerHTML=
+          `<span style="display:block;font-size:.62rem;color:rgba(255,255,255,.7)">Corte</span>
+           <strong id="corte-texto">${corteDetectado}</strong>`;
+      }
+
+      // ── LEER DATOS ────────────────────────────────────────────────────
+      const jsonData=XLSX.utils.sheet_to_json(ws,{defval:''});
+      if(!jsonData.length){msg.style.color='var(--red)';msg.textContent='⚠️ Archivo vacío.';return;}
+      const nd=[];
+      jsonData.forEach(r=>{
+        const k=Object.keys(r);
+        const prog=String(r[k[0]]||'').trim();
+        const nm=parseInt(r[k[1]]);
+        if(!prog||!nm) return;
+        nd.push({
+          p:prog,m:nm,
+          est:String(r[k[2]]||'').trim(),
+          desc:String(r[k[3]]||'').trim(),
+          cual:String(r[k[4]]||'').trim(),
+          meta4:parseFloat(r[k[5]])||0,
+          tipo:String(r[k[6]]||'').trim(),
+          p24:parseFloat(r[k[7]])||0,  e24:parseFloat(r[k[8]])||0,  pct24:parseFloat(r[k[9]])||0,
+          p25:parseFloat(r[k[10]])||0, e25:parseFloat(r[k[11]])||0, pct25:parseFloat(r[k[12]])||0,
+          p26:parseFloat(r[k[13]])||0, e26:parseFloat(r[k[14]])||0, pct26:parseFloat(r[k[15]])||0,
+        });
+      });
+      if(!nd.length){msg.style.color='var(--red)';msg.textContent='⚠️ Sin datos reconocidos.';return;}
+      DATA=nd;
+      PROGS.length=0; [...new Set(DATA.map(d=>d.p))].forEach(p=>PROGS.push(p));
+      PROGS.forEach((p,i)=>{ PCFG[p]={col:PCOL[i%PCOL.length],ico:PICO[i%PICO.length],idx:i}; });
+      buildKPIs(); buildProgCards(); buildTableFilters(); filterTbl(); buildDataStatus();
+      const corteMsg=corteDetectado?` · Corte actualizado: ${corteDetectado}`:'';
+      msg.textContent=`✅ ${nd.length} metas cargadas desde "${file.name}"${corteMsg}.`;
+    }catch(err){msg.style.color='var(--red)';msg.textContent='❌ Error: '+err.message;}
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// ── DRAG & DROP ───────────────────────────────────────────────────────────
+const dz=document.getElementById('drop-zone');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');});
+dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');
+  const f=e.dataTransfer.files[0];if(f){document.getElementById('file-input').files=e.dataTransfer.files;loadFile({target:{files:[f]}});}});
+
+const dzh=document.getElementById('drop-zone-html');
+dzh.addEventListener('dragover',e=>{e.preventDefault();dzh.classList.add('drag');});
+dzh.addEventListener('dragleave',()=>dzh.classList.remove('drag'));
+dzh.addEventListener('drop',e=>{e.preventDefault();dzh.classList.remove('drag');
+  const f=e.dataTransfer.files[0];if(f){document.getElementById('file-input-html').files=e.dataTransfer.files;loadHTML({target:{files:[f]}});}});
+
+// ── EDITAR CORTE ─────────────────────────────────────────────────────────
+function editCorte(){
+  const badge = document.getElementById('corte-badge');
+  const actual = document.getElementById('corte-texto').textContent;
+  badge.innerHTML = `
+    <span style="font-size:.6rem;color:rgba(255,255,255,.7);display:block;margin-bottom:2px">Corte</span>
+    <input id="corte-input" type="text" value="${actual}"
+      style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.4);border-radius:5px;
+             color:#fff;font-family:'Poppins',sans-serif;font-size:.82rem;font-weight:700;
+             text-align:center;width:110px;padding:2px 6px;outline:none;"
+      onkeydown="if(event.key==='Enter')saveCorte();if(event.key==='Escape')cancelCorte();"
+      onblur="saveCorte()">`;
+  const inp = document.getElementById('corte-input');
+  inp.focus(); inp.select();
+}
+function saveCorte(){
+  const inp = document.getElementById('corte-input');
+  if(!inp) return;
+  const val = inp.value.trim() || 'Sin definir';
+  document.getElementById('corte-badge').innerHTML = `
+    <span style="display:block;font-size:.62rem;color:rgba(255,255,255,.7)">Corte</span>
+    <strong id="corte-texto">${val}</strong>`;
+}
+function cancelCorte(){
+  const inp = document.getElementById('corte-input');
+  if(!inp) return;
+  const val = document.getElementById('corte-texto')?.textContent || 'Mayo 2026';
+  saveCorte();
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────
+window.onload=function(){ buildKPIs(); buildProgCards(); buildTableFilters(); filterTbl(); buildDataStatus(); };
+</script>
+</body>
+</html>
