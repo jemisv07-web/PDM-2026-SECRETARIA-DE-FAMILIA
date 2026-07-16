@@ -157,6 +157,7 @@ const watcher = chokidar.watch(DATA_DIR, {
 });
 
 watcher.on('change', (filePath) => {
+  if (path.basename(filePath) !== 'dashboard-data.json') return;
   console.log(`[watcher] Archivo modificado: ${filePath}`);
   try {
     const raw = fs.readFileSync(filePath, 'utf8');

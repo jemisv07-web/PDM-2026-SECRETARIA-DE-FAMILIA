@@ -103,20 +103,21 @@ function renderProgramas(programas) {
     tr.dataset.id = prog.id;
 
     const cells = [
-      prog.nombre,
-      prog.estado,
-      prog.beneficiarios.toLocaleString('es-CO'),
-      formatCurrency(prog.presupuesto),
-      prog.responsable,
-      prog.fechaInicio,
-      prog.observaciones,
+      { field: 'nombre',        value: prog.nombre },
+      { field: 'estado',        value: prog.estado },
+      { field: 'beneficiarios', value: prog.beneficiarios.toLocaleString('es-CO') },
+      { field: 'presupuesto',   value: formatCurrency(prog.presupuesto) },
+      { field: 'responsable',   value: prog.responsable },
+      { field: 'fechaInicio',   value: prog.fechaInicio },
+      { field: 'observaciones', value: prog.observaciones },
     ];
 
-    const editableIdx = [0, 2, 4, 6]; // nombre, beneficiarios, responsable, observaciones
-    cells.forEach((text, i) => {
+    const editableFields = new Set(['nombre', 'beneficiarios', 'responsable', 'observaciones']);
+    cells.forEach(({ field, value }) => {
       const td = document.createElement('td');
-      if (i === 1) {
-        td.innerHTML = badgeHtml(text);
+      td.dataset.field = field;
+      if (field === 'estado') {
+        td.innerHTML = badgeHtml(value);
         if (editMode) {
           // Estado as a select when editing
           const sel = document.createElement('select');
@@ -131,11 +132,11 @@ function renderProgramas(programas) {
           td.innerHTML = '';
           td.appendChild(sel);
         }
-      } else if (editMode && editableIdx.includes(i)) {
+      } else if (editMode && editableFields.has(field)) {
         td.contentEditable = 'true';
-        td.textContent = text;
+        td.textContent = value;
       } else {
-        td.textContent = text;
+        td.textContent = value;
       }
       tr.appendChild(td);
     });
@@ -238,7 +239,9 @@ function connectSSE() {
   eventSource.onerror = () => {
     statusDot.className = 'status-dot disconnected';
     statusText.textContent = 'Desconectado';
-    // Retry connection after 5 seconds
+    // Close current connection before retrying to avoid resource leaks
+    eventSource.close();
+    eventSource = null;
     setTimeout(connectSSE, 5000);
   };
 }
@@ -285,15 +288,16 @@ async function savePrograma(id) {
   const tr = programasTbody.querySelector(`tr[data-id="${id}"]`);
   if (!tr) return;
 
-  const tds = tr.querySelectorAll('td');
   const estadoSel = tr.querySelector('.estado-select');
 
+  const getField = (field) => tr.querySelector(`td[data-field="${field}"]`)?.textContent.trim() ?? '';
+
   const updates = {
-    nombre:        tds[0].textContent.trim(),
-    estado:        estadoSel ? estadoSel.value : tds[1].textContent.trim(),
-    beneficiarios: parseInt(tds[2].textContent.replace(/\D/g, ''), 10) || 0,
-    responsable:   tds[4].textContent.trim(),
-    observaciones: tds[6].textContent.trim(),
+    nombre:        getField('nombre'),
+    estado:        estadoSel ? estadoSel.value : getField('estado'),
+    beneficiarios: parseInt(getField('beneficiarios').replace(/\D/g, ''), 10) || 0,
+    responsable:   getField('responsable'),
+    observaciones: getField('observaciones'),
   };
 
   try {
