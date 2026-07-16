@@ -1,0 +1,143 @@
+{
+  "titulo": "Plan de Desarrollo Municipal 2026 - Secretaría de Familia",
+  "municipio": "Municipio",
+  "fechaActualizacion": "2026-07-16",
+  "indicadores": [
+    {
+      "id": 1,
+      "nombre": "Familias Atendidas",
+      "valor": 1250,
+      "meta": 2000,
+      "unidad": "familias",
+      "descripcion": "Número de familias beneficiadas con programas sociales",
+      "categoria": "Atención Social"
+    },
+    {
+      "id": 2,
+      "nombre": "Programas Activos",
+      "valor": 8,
+      "meta": 12,
+      "unidad": "programas",
+      "descripcion": "Programas de apoyo familiar actualmente en ejecución",
+      "categoria": "Programas"
+    },
+    {
+      "id": 3,
+      "nombre": "Niños en Programas Educativos",
+      "valor": 430,
+      "meta": 600,
+      "unidad": "niños",
+      "descripcion": "Menores participando en programas de apoyo educativo",
+      "categoria": "Educación"
+    },
+    {
+      "id": 4,
+      "nombre": "Adultos Mayores Atendidos",
+      "valor": 320,
+      "meta": 500,
+      "unidad": "adultos mayores",
+      "descripcion": "Adultos mayores con acceso a programas de bienestar",
+      "categoria": "Adulto Mayor"
+    },
+    {
+      "id": 5,
+      "nombre": "Mujeres en Programas",
+      "valor": 680,
+      "meta": 900,
+      "unidad": "mujeres",
+      "descripcion": "Mujeres beneficiadas con programas de equidad y empleo",
+      "categoria": "Equidad de Género"
+    },
+    {
+      "id": 6,
+      "nombre": "Presupuesto Ejecutado",
+      "valor": 45,
+      "meta": 100,
+      "unidad": "%",
+      "descripcion": "Porcentaje del presupuesto anual ejecutado",
+      "categoria": "Financiero"
+    }
+  ],
+  "programas": [
+    {
+      "id": 1,
+      "nombre": "Familias en Acción",
+      "estado": "Activo",
+      "beneficiarios": 450,
+      "presupuesto": 120000000,
+      "responsable": "Coordinación Social",
+      "fechaInicio": "2026-01-15",
+      "observaciones": "En ejecución según cronograma"
+    },
+    {
+      "id": 2,
+      "nombre": "Alimentación Escolar",
+      "estado": "Activo",
+      "beneficiarios": 380,
+      "presupuesto": 85000000,
+      "responsable": "Nutrición y Salud",
+      "fechaInicio": "2026-02-01",
+      "observaciones": "Cobertura ampliada a zonas rurales"
+    },
+    {
+      "id": 3,
+      "nombre": "Primera Infancia",
+      "estado": "Activo",
+      "beneficiarios": 210,
+      "presupuesto": 95000000,
+      "responsable": "Bienestar Familiar",
+      "fechaInicio": "2026-01-20",
+      "observaciones": "Articulación con ICBF"
+    },
+    {
+      "id": 4,
+      "nombre": "Adulto Mayor Activo",
+      "estado": "Activo",
+      "beneficiarios": 320,
+      "presupuesto": 60000000,
+      "responsable": "Gerontología",
+      "fechaInicio": "2026-03-01",
+      "observaciones": "Actividades de integración y salud"
+    },
+    {
+      "id": 5,
+      "nombre": "Emprendimiento Mujer",
+      "estado": "En Formulación",
+      "beneficiarios": 0,
+      "presupuesto": 45000000,
+      "responsable": "Equidad de Género",
+      "fechaInicio": "2026-08-01",
+      "observaciones": "Pendiente aprobación de recursos"
+    },
+    {
+      "id": 6,
+      "nombre": "Jóvenes en Riesgo",
+      "estado": "Activo",
+      "beneficiarios": 180,
+      "presupuesto": 70000000,
+      "responsable": "Juventud",
+      "fechaInicio": "2026-02-15",
+      "observaciones": "Talleres y actividades deportivas"
+    }
+  ],
+  "novedades": [
+    {
+      "id": 1,
+      "fecha": "2026-07-15",
+      "titulo": "Apertura convocatoria Familias en Acción",
+      "descripcion": "Se abre convocatoria para nuevos beneficiarios del programa Familias en Acción"
+    },
+    {
+      "id": 2,
+      "fecha": "2026-07-10",
+      "titulo": "Informe semestral aprobado",
+      "descripcion": "El Concejo Municipal aprobó el informe de gestión del primer semestre 2026"
+    },
+    {
+      "id": 3,
+      "fecha": "2026-07-05",
+      "titulo": "Nuevo convenio con ICBF",
+      "descripcion": "Firma de convenio para ampliar atención a primera infancia en zona rural"
+    }
+  ]
+}

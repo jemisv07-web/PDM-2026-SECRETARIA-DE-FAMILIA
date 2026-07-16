@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PDM 2026 – Secretaría de Familia</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <!-- ── Header ──────────────────────────────────────────────────── -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-brand">
+        <span class="header-icon">🏛️</span>
+        <div>
+          <h1 id="dash-title">Plan de Desarrollo Municipal 2026</h1>
+          <p id="dash-subtitle" class="header-subtitle">Secretaría de Familia</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <span class="status-badge" id="status-badge">
+          <span class="status-dot"></span>
+          <span id="status-text">Conectando…</span>
+        </span>
+        <span class="update-info">Actualizado: <strong id="last-updated">–</strong></span>
+        <button id="btn-edit-mode" class="btn btn-secondary">✏️ Editar</button>
+        <button id="btn-save-all" class="btn btn-primary hidden">💾 Guardar Todo</button>
+        <button id="btn-cancel-edit" class="btn btn-danger hidden">✖ Cancelar</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Toast notification ──────────────────────────────────────── -->
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- ── Main content ────────────────────────────────────────────── -->
+  <main class="main-content">
+
+    <!-- KPI Cards -->
+    <section class="section">
+      <h2 class="section-title">Indicadores Clave</h2>
+      <div id="indicadores-grid" class="cards-grid"></div>
+    </section>
+
+    <!-- Programs table -->
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title">Programas</h2>
+        <button id="btn-add-program" class="btn btn-sm btn-primary hidden">+ Agregar Programa</button>
+      </div>
+      <div class="table-wrapper">
+        <table id="programas-table" class="data-table">
+          <thead>
+            <tr>
+              <th>Programa</th>
+              <th>Estado</th>
+              <th>Beneficiarios</th>
+              <th>Presupuesto (COP)</th>
+              <th>Responsable</th>
+              <th>Inicio</th>
+              <th>Observaciones</th>
+              <th id="programas-actions-header" class="hidden">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="programas-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Novedades -->
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title">Novedades</h2>
+        <button id="btn-add-novedad" class="btn btn-sm btn-primary hidden">+ Agregar Novedad</button>
+      </div>
+      <div id="novedades-list" class="novedades-list"></div>
+    </section>
+  </main>
+
+  <!-- ── Modal: Edit Indicador ───────────────────────────────────── -->
+  <div id="modal-indicador" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-ind-title">
+    <div class="modal-box">
+      <h3 id="modal-ind-title" class="modal-title">Editar Indicador</h3>
+      <form id="form-indicador" class="modal-form" novalidate>
+        <input type="hidden" id="ind-id" />
+        <div class="form-row">
+          <label for="ind-nombre">Nombre</label>
+          <input type="text" id="ind-nombre" required />
+        </div>
+        <div class="form-row">
+          <label for="ind-descripcion">Descripción</label>
+          <textarea id="ind-descripcion" rows="2"></textarea>
+        </div>
+        <div class="form-row form-row-2">
+          <div>
+            <label for="ind-valor">Valor Actual</label>
+            <input type="number" id="ind-valor" required />
+          </div>
+          <div>
+            <label for="ind-meta">Meta</label>
+            <input type="number" id="ind-meta" required />
+          </div>
+        </div>
+        <div class="form-row form-row-2">
+          <div>
+            <label for="ind-unidad">Unidad</label>
+            <input type="text" id="ind-unidad" />
+          </div>
+          <div>
+            <label for="ind-categoria">Categoría</label>
+            <input type="text" id="ind-categoria" />
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-primary">Guardar</button>
+          <button type="button" class="btn btn-secondary" id="btn-close-ind-modal">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── Modal: Add/Edit Novedad ─────────────────────────────────── -->
+  <div id="modal-novedad" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-nov-title">
+    <div class="modal-box">
+      <h3 id="modal-nov-title" class="modal-title">Nueva Novedad</h3>
+      <form id="form-novedad" class="modal-form" novalidate>
+        <div class="form-row">
+          <label for="nov-titulo">Título</label>
+          <input type="text" id="nov-titulo" required />
+        </div>
+        <div class="form-row">
+          <label for="nov-descripcion">Descripción</label>
+          <textarea id="nov-descripcion" rows="3" required></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-primary">Publicar</button>
+          <button type="button" class="btn btn-secondary" id="btn-close-nov-modal">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
