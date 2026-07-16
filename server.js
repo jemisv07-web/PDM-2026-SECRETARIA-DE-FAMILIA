@@ -4,15 +4,26 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const chokidar = require('chokidar');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const DATA_FILE = path.join(__dirname, 'data', 'dashboard-data.json');
 const DATA_DIR = path.join(__dirname, 'data');
 
+// Rate limiter for API routes that perform file system access
+const apiLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 60,             // max 60 requests per minute per IP
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Demasiadas solicitudes. Por favor espere un momento antes de intentar nuevamente.' },
+});
+
 // Middleware
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/api', apiLimiter);
 
 // SSE clients registry
 const sseClients = new Set();
